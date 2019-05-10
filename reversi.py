@@ -1,10 +1,12 @@
 import tkinter as tk
+from tkinter import messagebox
 
 
 class Player:
-    def __init__(self, color):
+    def __init__(self, color, type=0):
         self.color = color
         self.point = 0
+        self.type = type
 
     def to_color(self):
         return self.color
@@ -57,10 +59,10 @@ class Reversi:
 
     def game_init(self):
         # initialize
-        self.put_stone([4, 4], self.PLAYER)
-        self.put_stone([4, 5], self.OPPONENT)
-        self.put_stone([5, 4], self.OPPONENT)
-        self.put_stone([5, 5], self.PLAYER)
+        self.put_stone([4, 4], self.OPPONENT)
+        self.put_stone([4, 5], self.PLAYER)
+        self.put_stone([5, 4], self.PLAYER)
+        self.put_stone([5, 5], self.OPPONENT)
 
         self.turn = self.PLAYER
 
@@ -174,23 +176,16 @@ class Reversi:
                 draw_flag = True
 
         if draw_flag:
-            print('''
-            ==========
-             GAME SET
-               DRAW
-            ==========
-            ''')
+            tk.messagebox.showinfo('GAME SET', 'DRAW')
 
         else:
-            print('''
-            ============
-              GAME SET
-            PLAYER {} WIN
-            ============
-            '''.format(self.ORDER.index(winner)+1))
+            tk.messagebox.showinfo('GAME SET', 'PLAYER {}, WIN!'.format(self.ORDER.index(winner)+1))
 
     @classmethod
     def progress(cls, board, y, x):
+        '''
+        プレイヤーが手番のとき、おけるマスをクリックしたらゲームが進行する
+        '''
 
         if not((y,x) in board.putlist):
             print('position error')
@@ -202,24 +197,31 @@ class Reversi:
 
         board.make_putlist(board.turn)
 
+        board.show_board_gui()
+
         start_player = board.turn
         # パス判定
         while len(board.putlist) == 0:
-            print('=====PASS=====')
+            
+            tk.messagebox.showinfo('GAME INFO', 'PLAYER {}, PASS'.format(board.ORDER.index(board.turn)+1))
             board.nextturn()
+
+            board.make_putlist(board.turn)
+            board.show_board_gui()
+            
 
             if start_player == board.turn:
                 break
 
         if len(board.putlist) == 0:
             # 終了
-            board.window.destroy()
             board.end()
+            board.window.destroy()
             return
 
-        
-
-        board.show_board_gui()
+        if board.turn.type != 0:
+            # AIに手番を投げる
+            pass
 
         
 
