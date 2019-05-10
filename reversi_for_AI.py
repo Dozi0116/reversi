@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import messagebox
 import copy
 
+'''
+AI vs AI用のGUIを使わないやつ
+'''
 
 class Player:
     def __init__(self, color, type='human', rogic=None):
@@ -22,15 +25,10 @@ class Player:
         return self.color
 
 class Cell:
-    def __init__(self, board, parent, y, x):
+    def __init__(self, board, y, x):
         self.y = y
         self.x = x
         self.stone = None
-        self.frame = tk.Frame(parent, relief=tk.FLAT, bd=2, width=50, height=50)
-        self.canvas = tk.Canvas(self.frame, bg='#459b5f', width=50, height=50)
-        self.canvas.bind('<Button-1>', self.on_click)
-        self.frame.grid(row=y, column=x)
-        self.canvas.place(x = 0, y = 0)
         self.board = board
 
     def on_click(self, event):
@@ -44,23 +42,12 @@ class Reversi:
         self.BOARD_WIDTH = self.BOARD_HEIGHT = 8
         self.board = [[None for _ in range(self.BOARD_WIDTH + 2)] for _ in range(self.BOARD_HEIGHT + 2)] # outer-side
 
-        self.window = tk.Tk()
-        self.window.title = 'リバーシゲーム'
-        self.window.geometry('{}x{}'.format(self.BOARD_WIDTH*50+10, self.BOARD_HEIGHT*50+10 + 200))
-        self.board_frame = tk.Frame(self.window, relief=tk.RIDGE, bd=5, width=self.BOARD_WIDTH*50, height=self.BOARD_HEIGHT*50)
-
         # cell配置
         for y in range(1, self.BOARD_HEIGHT+1):
             for x in range(1, self.BOARD_WIDTH+1):
-                self.board[y][x] = Cell(self, self.board_frame, y, x)
-
-        self.board_frame.pack()
-
-        self.info_frame = tk.Frame(self.window, bg='gray80', width=self.board_frame['width'], height=200)
-        # 誰番か、パスがあったかを表示
-        self.info_frame.pack()
+                self.board[y][x] = Cell(self, y, x)
         
-        self.PLAYER = Player('gray1', 'human')
+        self.PLAYER = Player('gray1', 'AI', Reversi.mini_max)
         self.OPPONENT = Player('gray99', 'AI', Reversi.mini_max)
         self.ORDER = [self.PLAYER, self.OPPONENT]
         self.putlist = []
@@ -77,22 +64,6 @@ class Reversi:
         self.turn = self.PLAYER
 
         self.putlist = self.make_putlist(self.turn)
-
-        self.show_board_gui()
-
-    def show_board_gui(self):
-        # 盤面
-        for y in range(1, self.BOARD_HEIGHT+1):
-            for x in range(1, self.BOARD_WIDTH+1):
-                # cellの中身をきれいに
-                self.board[y][x].canvas.delete('all')
-                if (y, x) in self.putlist:
-                    self.board[y][x].canvas.create_oval(10, 10, 40, 40, fill='gray50', tag='stone')
-                elif not(self.board[y][x].stone is None):
-                    self.board[y][x].canvas.create_oval(10, 10, 40, 40, fill=self.board[y][x].stone, tag='stone')
-
-        # 手番
-        print('player{} の ターン'.format(self.order_index + 1))
 
 
     def make_putlist(self, player):
@@ -193,55 +164,10 @@ class Reversi:
                 draw_flag = True
 
         if draw_flag:
-            tk.messagebox.showinfo('GAME SET', 'DRAW')
+            printf('\nGAME SET\nDRAW')
 
         else:
-            tk.messagebox.showinfo('GAME SET', 'PLAYER {}, WIN!'.format(self.ORDER.index(winner)+1))
-
-    @classmethod
-    def progress(cls, game, pos):
-        '''
-        プレイヤーが手番のとき、おけるマスをクリックしたらゲームが進行する
-        '''
-
-        (y, x) = pos
-
-        if not((y,x) in game.putlist):
-            print('position error')
-            return
-
-        game.put_stone((y,x), game.turn)
-
-        game.nextturn()
-
-        game.putlist = game.make_putlist(game.turn)
-
-        game.show_board_gui()
-
-        start_player = game.turn
-        # パス判定
-        while len(game.putlist) == 0:
-            
-            tk.messagebox.showinfo('GAME INFO', 'PLAYER {}, PASS'.format(game.ORDER.index(game.turn)+1))
-            game.nextturn()
-
-            game.putlist = game.make_putlist(game.turn)
-            game.show_board_gui()
-            
-
-            if start_player == game.turn:
-                break
-
-        if len(game.putlist) == 0:
-            # 終了
-            game.end()
-            game.window.destroy()
-            return
-
-        if game.turn.type == 'AI':
-            # AIに手番を投げる
-            Reversi.progress(game, game.turn.rogic(game))
-            
+            print('\nGAME SET\nPLAYER {}, WIN!'.format(self.ORDER.index(winner)+1))
 
     @classmethod
     def mini_max(cls, game):
@@ -279,7 +205,35 @@ def main():
 
     game.game_init()
 
-    game.window.mainloop()
+    # game main loop
+    while True:
+        # print('PLAYER {} TURN'.format(game.ORDER.index(game.turn)+1))
+        pos = game.turn.rogic(game)
+        # print('put position -> ({}, {})'.format(pos[0], pos[1]))
+        print('{}{}'.format(chr(ord('A') + (pos[0] - 1)), pos[1]), end='')
+
+        game.put_stone(pos, game.turn)
+        
+        game.nextturn()
+
+        game.putlist = game.make_putlist(game.turn)
+
+        start_player = game.turn
+        # パス判定
+        while len(game.putlist) == 0:
+            
+            # print('GAME INFO\nPLAYER {}, PASS'.format(game.ORDER.index(game.turn)+1))
+            game.nextturn()
+
+            game.putlist = game.make_putlist(game.turn)
+
+            if start_player == game.turn:
+                break
+
+        if len(game.putlist) == 0:
+            # 終了
+            game.end()
+            return
 
     return
 
