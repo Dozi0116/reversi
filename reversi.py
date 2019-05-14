@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import copy
+import time
 
 
 class Player:
@@ -34,7 +35,7 @@ class Cell:
         self.board = board
 
     def on_click(self, event):
-        print('clicked! ({}, {})'.format(self.y, self.x))
+        print('clicked! ({}, {}) -> {}'.format(self.y, self.x, self.stone))
         Reversi.progress(self.board, (self.y, self.x))
         
 
@@ -135,10 +136,17 @@ class Reversi:
 
 
     def put_stone(self, position, player, test=False):
+        '''
+        positionに応じて石を置く。
+        testがTrueのときは、実際には反映させず、結果だけ返す。
+        '''
         
-        board = self.board[:]
+        board = [[None for _ in range(self.BOARD_WIDTH+2)] for _ in range(self.BOARD_HEIGHT+2)]
+        for y in range(1, self.BOARD_HEIGHT+1):
+            for x in range(1, self.BOARD_WIDTH+1):
+                board[y][x] = self.board[y][x].stone
 
-        board[position[0]][position[1]].stone = player.to_color()
+        board[position[0]][position[1]] = player.to_color()
 
         for d in self.DIRECTION:
             dx, dy = position[1] + d[1], position[0] + d[0]
@@ -146,10 +154,10 @@ class Reversi:
             if board[dy][dx] is None:
                 continue
 
-            if board[dy][dx].stone != player.to_color() and not(board[dy][dx].stone is None):
+            if board[dy][dx] != player.to_color() and not(board[dy][dx] is None):
                 # 相手の石
                 # 自分の石の色になるまで
-                while not(board[dy][dx] is None) and not(board[dy][dx].stone is None) and (board[dy][dx].stone != player.to_color()):
+                while not(board[dy][dx] is None) and (board[dy][dx] != player.to_color()):
                     dx += d[1]
                     dy += d[0]
 
@@ -157,17 +165,22 @@ class Reversi:
                 if board[dy][dx] is None:
                     continue
                 
-                if board[dy][dx].stone == player.to_color():
+                if board[dy][dx] == player.to_color():
                     # ひっくり返せる
                     dx -= d[1]
                     dy -= d[0]
-                    while not(board[dy][dx].stone is None) and (board[dy][dx].stone != player.to_color()):
-                        board[dy][dx].stone = player.to_color()
+                    while not(board[dy][dx] is None) and (board[dy][dx] != player.to_color()):
+                        board[dy][dx] = player.to_color()
                         dx -= d[1]
                         dy -= d[0]
 
         if not test:
-            self.board = board[:]
+            print('test = False')
+            for y in range(1, self.BOARD_HEIGHT+1):
+                for x in range(1,self.BOARD_WIDTH+1):
+                    self.board[y][x].stone = board[y][x]
+
+        return board
 
 
     def nextturn(self):
@@ -250,18 +263,45 @@ class Reversi:
         2手先まで読んで、最善の手を選択。
         """
 
-        evaluation = [ \
-            [ 30, -12,   0,  -1,  -1,   0, -12,  30], \
-            [-12, -15,  -3,  -3,  -3,  -3, -15, -12], \
-            [  0,  -3,   0,  -1,  -1,   0,  -3,   0], \
-            [ -1,  -3,  -1,  -1,  -1,  -1,  -3,  -1], \
-            [ -1,  -3,  -1,  -1,  -1,  -1,  -3,  -1], \
-            [  0,  -3,   0,  -1,  -1,   0,  -3,   0], \
-            [-12, -15,  -3,  -3,  -3,  -3, -15, -12], \
-            [ 30, -12,   0,  -1,  -1,   0, -12,  30] \
-        ]
+        def calc_score(game, board):
+            """
+            boardを受け取ったら、評価値を返す
+            """
 
-        score = 0
+            evaluation = [ \
+                [ 30, -12,   0,  -1,  -1,   0, -12,  30], \
+                [-12, -15,  -3,  -3,  -3,  -3, -15, -12], \
+                [  0,  -3,   0,  -1,  -1,   0,  -3,   0], \
+                [ -1,  -3,  -1,  -1,  -1,  -1,  -3,  -1], \
+                [ -1,  -3,  -1,  -1,  -1,  -1,  -3,  -1], \
+                [  0,  -3,   0,  -1,  -1,   0,  -3,   0], \
+                [-12, -15,  -3,  -3,  -3,  -3, -15, -12], \
+                [ 30, -12,   0,  -1,  -1,   0, -12,  30] \
+            ]
+
+            score = 0
+
+            for y in range(1, game.BOARD_WIDTH+1):
+                for x in range(1, game.BOARD_HEIGHT+1):
+                    if board[y][x] is None:
+                        continue
+                    elif board[y][x] == game.turn.to_color():
+                        score += evaluation[y-1][x-1] # game.boardは外周が含まれているため。
+                    else:
+                        score -= evaluation[y-1][x-1]
+
+                    print('(y, x) = ({}, {}) => {} : {} points'.format())
+
+            return score
+
+
+        # 1手先読みしてみる
+        score = []
+        for pos in game.putlist:
+            board = game.put_stone(pos, game.turn, test=True)
+            score.append(calc_score(game, board))
+
+        print(score)
 
 
         # print("press ({}, {})".format(game.putlist[0][0], game.putlist[0][1]))
