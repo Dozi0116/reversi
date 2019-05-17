@@ -49,7 +49,7 @@ class Reversi:
         
         self.ORDER = [Player('gray1', 'AI', Reversi.mini_max), Player('gray99', 'AI', Reversi.mini_max)]
         self.putlist = []
-        self.order_index = 0
+        self.order_index = None
         self.DIRECTION = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
 
     def opponent(self, player):
@@ -61,7 +61,8 @@ class Reversi:
 
     def game_init(self):
         # initialize
-        self.turn = random.choice(self.ORDER)
+        self.order_index = random.randint(0, 1)
+        self.turn = self.ORDER[self.order_index]
         self.put_stone([4, 4], self.opponent(self.turn))
         self.put_stone([4, 5], self.turn)
         self.put_stone([5, 4], self.turn)
@@ -118,7 +119,7 @@ class Reversi:
 
 
 
-    def put_stone(self, position, player, test = False, board = None):
+    def put_stone(self, position, player, test = False, test_board = None):
         '''
         positionに応じて石を置く。
         testがTrueのときは、実際には反映させず、結果だけ返す。
@@ -193,7 +194,7 @@ class Reversi:
                 draw_flag = True
 
         if draw_flag:
-            printf('\nGAME SET\nDRAW')
+            print('\nGAME SET\nDRAW')
 
         else:
             print('\nGAME SET\nPLAYER {}, WIN!'.format(self.ORDER.index(winner)+1))
@@ -205,23 +206,50 @@ class Reversi:
         2手先まで読んで、最善の手を選択。
         """
 
-        evaluation = [ \
-            [ 30, -12,   0,  -1,  -1,   0, -12,  30], \
-            [-12, -15,  -3,  -3,  -3,  -3, -15, -12], \
-            [  0,  -3,   0,  -1,  -1,   0,  -3,   0], \
-            [ -1,  -3,  -1,  -1,  -1,  -1,  -3,  -1], \
-            [ -1,  -3,  -1,  -1,  -1,  -1,  -3,  -1], \
-            [  0,  -3,   0,  -1,  -1,   0,  -3,   0], \
-            [-12, -15,  -3,  -3,  -3,  -3, -15, -12], \
-            [ 30, -12,   0,  -1,  -1,   0, -12,  30] \
-        ]
+        def calc_score(game, board):
+            """
+            boardを受け取ったら、評価値を返す
+            """
 
-        score = 0
+            evaluation = [ \
+                [ 30, -12,   0,  -1,  -1,   0, -12,  30], \
+                [-12, -15,  -3,  -3,  -3,  -3, -15, -12], \
+                [  0,  -3,   0,  -1,  -1,   0,  -3,   0], \
+                [ -1,  -3,  -1,  -1,  -1,  -1,  -3,  -1], \
+                [ -1,  -3,  -1,  -1,  -1,  -1,  -3,  -1], \
+                [  0,  -3,   0,  -1,  -1,   0,  -3,   0], \
+                [-12, -15,  -3,  -3,  -3,  -3, -15, -12], \
+                [ 30, -12,   0,  -1,  -1,   0, -12,  30] \
+            ]
+
+            score = 0
+
+            for y in range(1, game.BOARD_WIDTH+1):
+                for x in range(1, game.BOARD_HEIGHT+1):
+                    if board[y][x] is None:
+                        continue
+                    elif board[y][x] == game.turn.to_color():
+                        score += evaluation[y-1][x-1] # game.boardは外周が含まれているため。
+                    else:
+                        score -= evaluation[y-1][x-1]
+
+            return score
 
 
-        # print("press ({}, {})".format(game.putlist[0][0], game.putlist[0][1]))
-        print(game.putlist)
-        return game.putlist[0]
+        # 1手先読みしてみる
+        max_score = -9999
+        max_pos = game.putlist[0]
+        for pos in game.putlist:
+            board = game.put_stone(pos, game.turn, test=True) # 1手先置きした盤面
+            score = calc_score(game, board)
+            print('if put ({}, {}) -> {} points'.format(pos[0], pos[1], score))
+            if score > max_score:
+                max_score = score
+                max_pos = pos
+
+
+        print("press ({}, {})".format(max_pos[0], max_pos[1]))
+        return max_pos
         
 
 
@@ -252,7 +280,7 @@ def main():
         # パス判定
         while len(game.putlist) == 0:
             
-            # print('\n\nGAME INFO\nPLAYER {}, PASS\n'.format(game.ORDER.index(game.turn)+1))
+            print('\n\nGAME INFO\nPLAYER {}, PASS\n'.format(game.ORDER.index(game.turn)+1))
             game.nextturn()
 
             game.putlist = game.make_putlist(game.turn)
