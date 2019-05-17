@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import copy
+import random
 
 '''
 AI vs AI用のGUIを使わないやつ
@@ -25,19 +26,18 @@ class Player:
         return self.color
 
 class Cell:
-    def __init__(self, board, y, x):
+    def __init__(self, y, x):
         self.y = y
         self.x = x
         self.stone = None
-        self.board = board
-
-    def on_click(self, event):
-        print('clicked! ({}, {})'.format(self.y, self.x))
-        Reversi.progress(self.board, (self.y, self.x))
         
 
 
 class Reversi:
+    """
+    2人用リバーシゲーム
+    """
+
     def __init__(self):
         self.BOARD_WIDTH = self.BOARD_HEIGHT = 8
         self.board = [[None for _ in range(self.BOARD_WIDTH + 2)] for _ in range(self.BOARD_HEIGHT + 2)] # outer-side
@@ -45,57 +45,70 @@ class Reversi:
         # cell配置
         for y in range(1, self.BOARD_HEIGHT+1):
             for x in range(1, self.BOARD_WIDTH+1):
-                self.board[y][x] = Cell(self, y, x)
+                self.board[y][x] = Cell(y, x)
         
-        self.PLAYER = Player('gray1', 'AI', Reversi.mini_max)
-        self.OPPONENT = Player('gray99', 'AI', Reversi.mini_max)
-        self.ORDER = [self.PLAYER, self.OPPONENT]
+        self.ORDER = [Player('gray1', 'AI', Reversi.mini_max), Player('gray99', 'AI', Reversi.mini_max)]
         self.putlist = []
         self.order_index = 0
         self.DIRECTION = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
 
+    def opponent(self, player):
+        """
+        指定したプレイヤーの相手を返す。
+        """
+        return self.ORDER[1] if player == self.ORDER[0] else self.ORDER[0]
+
+
     def game_init(self):
         # initialize
-        self.put_stone([4, 4], self.OPPONENT)
-        self.put_stone([4, 5], self.PLAYER)
-        self.put_stone([5, 4], self.PLAYER)
-        self.put_stone([5, 5], self.OPPONENT)
-
-        self.turn = self.PLAYER
+        self.turn = random.choice(self.ORDER)
+        self.put_stone([4, 4], self.opponent(self.turn))
+        self.put_stone([4, 5], self.turn)
+        self.put_stone([5, 4], self.turn)
+        self.put_stone([5, 5], self.opponent(self.turn))
 
         self.putlist = self.make_putlist(self.turn)
 
 
-    def make_putlist(self, player):
+    def make_putlist(self, player, board = None):
         """
         turn_playerが今置ける場所を返す。
+        盤面の指定があれば指定された盤面を、なければ、現在のゲームの状態を参照する。
+        探索計算量はO(マス目の数 * 8)
         """
+
+        # マス情報を移す
+        if board is None:
+            board = [[None for _ in range(self.BOARD_WIDTH+2)] for _ in range(self.BOARD_HEIGHT+2)]
+            for y in range(1, self.BOARD_HEIGHT+1):
+                for x in range(1, self.BOARD_WIDTH+1):
+                    board[y][x] = self.board[y][x].stone
 
         result = []
 
         for y in range(1, self.BOARD_HEIGHT+1):
             for x in range(1, self.BOARD_WIDTH+1):
 
-                if not(self.board[y][x].stone is None):
+                if board[y][x] is not None:
                     continue
 
                 for d in self.DIRECTION:
                     dx, dy = x + d[1], y + d[0]
 
-                    if self.board[dy][dx] is None:
+                    if board[dy][dx] is None:
                         continue
                     
-                    if self.board[dy][dx].stone != player.to_color() and not(self.board[dy][dx].stone is None):
+                    if board[dy][dx] != player.to_color() and board[dy][dx] is not None:
                         # 相手の石を見つけた→ひっくり返せるか調査
                         # 自分の石の色に or Noneがくるまで
-                        while not(self.board[dy][dx] is None) and not(self.board[dy][dx].stone is None) and (self.board[dy][dx].stone != player.to_color()):
+                        while board[dy][dx] is not None and (board[dy][dx] != player.to_color()):
                             dx += d[1]
                             dy += d[0]
 
-                        if self.board[dy][dx] is None:
+                        if board[dy][dx] is None:
                             continue
 
-                        if self.board[dy][dx].stone == player.to_color():
+                        if board[dy][dx] == player.to_color():
                             # ひっくり返せる
                             # resultにappendして、for d in self.DIRECTIONを抜ける
                             result.append((y, x))
@@ -105,11 +118,23 @@ class Reversi:
 
 
 
-    def put_stone(self, position, player, test=False):
-        
-        board = self.board[:]
+    def put_stone(self, position, player, test = False, board = None):
+        '''
+        positionに応じて石を置く。
+        testがTrueのときは、実際には反映させず、結果だけ返す。
+        test_boardがあった場合
+        '''
+        board = None
+        if test and test_board is not None:
+            board = test_board[:]
+        else:
+            board = [[None for _ in range(self.BOARD_WIDTH+2)] for _ in range(self.BOARD_HEIGHT+2)]
+            for y in range(1, self.BOARD_HEIGHT+1):
+                for x in range(1, self.BOARD_WIDTH+1):
+                    board[y][x] = self.board[y][x].stone
 
-        board[position[0]][position[1]].stone = player.to_color()
+
+        board[position[0]][position[1]] = player.to_color()
 
         for d in self.DIRECTION:
             dx, dy = position[1] + d[1], position[0] + d[0]
@@ -117,10 +142,10 @@ class Reversi:
             if board[dy][dx] is None:
                 continue
 
-            if board[dy][dx].stone != player.to_color() and not(board[dy][dx].stone is None):
+            if board[dy][dx] != player.to_color() and board[dy][dx] is not None:
                 # 相手の石
                 # 自分の石の色になるまで
-                while not(board[dy][dx] is None) and not(board[dy][dx].stone is None) and (board[dy][dx].stone != player.to_color()):
+                while board[dy][dx] is not None and board[dy][dx] != player.to_color():
                     dx += d[1]
                     dy += d[0]
 
@@ -128,17 +153,21 @@ class Reversi:
                 if board[dy][dx] is None:
                     continue
                 
-                if board[dy][dx].stone == player.to_color():
+                if board[dy][dx] == player.to_color():
                     # ひっくり返せる
                     dx -= d[1]
                     dy -= d[0]
-                    while not(board[dy][dx].stone is None) and (board[dy][dx].stone != player.to_color()):
-                        board[dy][dx].stone = player.to_color()
+                    while board[dy][dx] is not None and board[dy][dx] != player.to_color():
+                        board[dy][dx] = player.to_color()
                         dx -= d[1]
                         dy -= d[0]
 
         if not test:
-            self.board = board[:]
+            for y in range(1, self.BOARD_HEIGHT+1):
+                for x in range(1,self.BOARD_WIDTH+1):
+                    self.board[y][x].stone = board[y][x]
+
+        return board
 
 
     def nextturn(self):
@@ -191,6 +220,7 @@ class Reversi:
 
 
         # print("press ({}, {})".format(game.putlist[0][0], game.putlist[0][1]))
+        print(game.putlist)
         return game.putlist[0]
         
 
@@ -222,7 +252,7 @@ def main():
         # パス判定
         while len(game.putlist) == 0:
             
-            # print('GAME INFO\nPLAYER {}, PASS'.format(game.ORDER.index(game.turn)+1))
+            # print('\n\nGAME INFO\nPLAYER {}, PASS\n'.format(game.ORDER.index(game.turn)+1))
             game.nextturn()
 
             game.putlist = game.make_putlist(game.turn)
