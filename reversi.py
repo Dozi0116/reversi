@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import copy
 import time
+import random
 
 
 class Player:
@@ -61,21 +62,25 @@ class Reversi:
         # 誰番か、パスがあったかを表示
         self.info_frame.pack()
         
-        self.PLAYER = Player('gray1', 'human')
-        self.OPPONENT = Player('gray99', 'AI', Reversi.mini_max)
-        self.ORDER = [self.PLAYER, self.OPPONENT]
+        self.ORDER = [Player('gray1', 'Player'), Player('gray99', 'AI', Reversi.mini_max)]
         self.putlist = []
         self.order_index = 0
         self.DIRECTION = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
 
+    def opponent(self, player):
+        """
+        指定したプレイヤーの相手を返す。
+        """
+        return self.ORDER[1] if player == self.ORDER[0] else self.ORDER[0]
+
     def game_init(self):
         # initialize
-        self.put_stone([4, 4], self.OPPONENT)
-        self.put_stone([4, 5], self.PLAYER)
-        self.put_stone([5, 4], self.PLAYER)
-        self.put_stone([5, 5], self.OPPONENT)
-
-        self.turn = self.PLAYER
+        self.order_index = random.randint(0, 1)
+        self.turn = self.ORDER[self.order_index]
+        self.put_stone([4, 4], self.opponent(self.turn))
+        self.put_stone([4, 5], self.turn)
+        self.put_stone([5, 4], self.turn)
+        self.put_stone([5, 5], self.opponent(self.turn))
 
         self.putlist = self.make_putlist(self.turn)
 
@@ -96,36 +101,39 @@ class Reversi:
         print('player{} の ターン'.format(self.order_index + 1))
 
 
-    def make_putlist(self, player):
+    def make_putlist(self, player, board = None):
         """
         turn_playerが今置ける場所を返す。
         """
+
+        if board is None:
+            board = self.board
 
         result = []
 
         for y in range(1, self.BOARD_HEIGHT+1):
             for x in range(1, self.BOARD_WIDTH+1):
 
-                if not(self.board[y][x].stone is None):
+                if not(board[y][x].stone is None):
                     continue
 
                 for d in self.DIRECTION:
                     dx, dy = x + d[1], y + d[0]
 
-                    if self.board[dy][dx] is None:
+                    if board[dy][dx] is None:
                         continue
                     
-                    if self.board[dy][dx].stone != player.to_color() and not(self.board[dy][dx].stone is None):
+                    if board[dy][dx].stone != player.to_color() and not(board[dy][dx].stone is None):
                         # 相手の石を見つけた→ひっくり返せるか調査
                         # 自分の石の色に or Noneがくるまで
-                        while not(self.board[dy][dx] is None) and not(self.board[dy][dx].stone is None) and (self.board[dy][dx].stone != player.to_color()):
+                        while not(board[dy][dx] is None) and not(board[dy][dx].stone is None) and (board[dy][dx].stone != player.to_color()):
                             dx += d[1]
                             dy += d[0]
 
-                        if self.board[dy][dx] is None:
+                        if board[dy][dx] is None:
                             continue
 
-                        if self.board[dy][dx].stone == player.to_color():
+                        if board[dy][dx].stone == player.to_color():
                             # ひっくり返せる
                             # resultにappendして、for d in self.DIRECTIONを抜ける
                             result.append((y, x))
@@ -135,16 +143,21 @@ class Reversi:
 
 
 
-    def put_stone(self, position, player, test=False):
+    def put_stone(self, position, player, test = False, test_board = None):
         '''
         positionに応じて石を置く。
         testがTrueのときは、実際には反映させず、結果だけ返す。
+        test_boardがあった場合
         '''
-        
-        board = [[None for _ in range(self.BOARD_WIDTH+2)] for _ in range(self.BOARD_HEIGHT+2)]
-        for y in range(1, self.BOARD_HEIGHT+1):
-            for x in range(1, self.BOARD_WIDTH+1):
-                board[y][x] = self.board[y][x].stone
+        board = None
+        if test == True and (not test_board is None):
+            board = test_board[:]
+        else:
+            board = [[None for _ in range(self.BOARD_WIDTH+2)] for _ in range(self.BOARD_HEIGHT+2)]
+            for y in range(1, self.BOARD_HEIGHT+1):
+                for x in range(1, self.BOARD_WIDTH+1):
+                    board[y][x] = self.board[y][x].stone
+
 
         board[position[0]][position[1]] = player.to_color()
 
@@ -175,7 +188,6 @@ class Reversi:
                         dy -= d[0]
 
         if not test:
-            print('test = False')
             for y in range(1, self.BOARD_HEIGHT+1):
                 for x in range(1,self.BOARD_WIDTH+1):
                     self.board[y][x].stone = board[y][x]
@@ -261,6 +273,11 @@ class Reversi:
         """
         ミニマックス法。
         2手先まで読んで、最善の手を選択。
+        
+        ...
+
+        現在はマックス法
+        置いて最高の盤面になる手を選択。
         """
 
         def calc_score(game, board):
@@ -290,22 +307,23 @@ class Reversi:
                     else:
                         score -= evaluation[y-1][x-1]
 
-                    print('(y, x) = ({}, {}) => {} : {} points'.format())
-
             return score
 
 
         # 1手先読みしてみる
-        score = []
+        max_score = -9999
+        max_pos = game.putlist[0]
         for pos in game.putlist:
-            board = game.put_stone(pos, game.turn, test=True)
-            score.append(calc_score(game, board))
+            board = game.put_stone(pos, game.turn, test=True) # 1手先置きした盤面
+            score = calc_score(game, board)
+            print('if put ({}, {}) -> {} points'.format(pos[0], pos[1], score))
+            if score > max_score:
+                max_score = score
+                max_pos = pos
 
-        print(score)
 
-
-        # print("press ({}, {})".format(game.putlist[0][0], game.putlist[0][1]))
-        return game.putlist[0]
+        print("press ({}, {})".format(max_pos[0], max_pos[1]))
+        return max_pos
         
 
 
