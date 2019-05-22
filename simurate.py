@@ -7,8 +7,8 @@ def main():
     # reversi program
     
     ## game initialize
-    game = reversi.Reversi([reversi.Player('gray1', 'AI', bot.mini_max), \
-                    reversi.Player('gray99', 'AI', bot.mini_max)], \
+    game = reversi.Reversi([reversi.Player('gray1', 'AI', bot.mini_max, name='MINI_MAX_BOT'), \
+                    reversi.Player('gray99', 'AI', bot.mini_max, name='MAX_BOT')], \
                     area = 8)
 
     game.game_init()

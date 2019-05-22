@@ -8,10 +8,10 @@ import random
 
 
 class Player:
-    def __init__(self, color, type='human', rogic=None, name=None):
+    def __init__(self, color, group='human', rogic=None, name=None):
         self.color = color
         self.point = 0
-        self.type = type
+        self.group = group
         self.rogic = rogic
         self.name = name
 
@@ -87,7 +87,6 @@ class Reversi:
         # initialize
         print(self.ORDER[0].to_color(), self.ORDER[1].to_color())
         self.order_index = random.randint(0, 1) # 0 or 1
-        print("turn -> {} -> {}".format(self.order_index, self.ORDER[self.order_index]))
         self.turn = self.ORDER[self.order_index]
         self.put_stone([4, 4], self.opponent(self.turn))
         self.put_stone([4, 5], self.turn)
@@ -96,7 +95,27 @@ class Reversi:
 
         self.putlist = self.make_putlist(self.turn)
 
+        print('{} からスタート'.format(self.turn.to_name()))
+
         if self.display == 'gui':
+            while self.turn.group == 'AI':
+                # 先に置く
+                self.put_stone(self.turn.rogic(self), self.turn)
+                self.nextturn()
+                self.putlist = self.make_putlist(self.turn)
+
+                start_player = self.turn
+                # パス判定
+                while len(self.putlist) == 0:
+                    self.nextturn()
+                    self.putlist = self.make_putlist(self.turn)
+
+                if start_player == self.turn:
+                    break
+
+                if len(self.putlist) == 0:
+                    print('error.')
+            
             self.show_board_gui()
 
     def show_board_gui(self):
@@ -111,7 +130,7 @@ class Reversi:
                     self.cells[y][x].canvas.create_oval(10, 10, 40, 40, fill=self.board[y][x], tag='stone')
 
         # 手番
-        print('player{} の ターン'.format(self.order_index + 1))
+        print('{} の ターン'.format(self.turn.to_name()))
 
 
     def make_putlist(self, player, board = None):
@@ -215,13 +234,16 @@ class Reversi:
 
     def end(self):
 
-        print('game end!')
+        print('\ngame end!')
         
         for p in self.ORDER:
             for y in range(1, self.BOARD_WIDTH+1):
                 for x in range(1, self.BOARD_HEIGHT+1):
                     if self.board[y][x] == p.to_color():
                         p.point += 1
+
+        for p in self.ORDER:
+            print('{} points -> {}'.format(p.to_name(), p.point))
 
         draw_flag = False
         winner = self.ORDER[0]
@@ -285,6 +307,6 @@ class Reversi:
             game.window.destroy()
             return
 
-        if game.turn.type == 'AI':
+        if game.turn.group == 'AI':
             # AIに手番を投げる
             Reversi.progress(game, game.turn.rogic(game))
