@@ -8,12 +8,14 @@ import random
 
 
 class Player:
-    def __init__(self, color, group='human', rogic=None, name=None):
+    def __init__(self, color, group='human', rogic=None, name=None, **kwargs):
         self.color = color
         self.point = 0
         self.group = group
         self.rogic = rogic
         self.name = name
+
+        self.kwargs = kwargs
 
         """
         self.rogicについて
