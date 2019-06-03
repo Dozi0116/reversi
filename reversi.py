@@ -29,7 +29,10 @@ class Player:
         return self.color
 
     def to_name(self):
-        return self.name
+        if self.group == 'AI':
+            return self.rogic.__name__
+        else:
+            return self.name
 
 class Cell:
     def __init__(self, game, parent, y, x):
@@ -58,8 +61,16 @@ class Reversi:
         if mode == 'gui':
             self.window = tk.Tk()
             self.window.title = 'リバーシゲーム'
-            self.window.geometry('{}x{}'.format(self.BOARD_WIDTH*50+10, self.BOARD_HEIGHT*50+10 + 200))
-            self.board_frame = tk.Frame(self.window, relief=tk.RIDGE, bd=5, width=self.BOARD_WIDTH*50, height=self.BOARD_HEIGHT*50)
+            self.window.geometry(
+                '{}x{}'.format(self.BOARD_WIDTH*50+10, self.BOARD_HEIGHT*50+10 + 200)
+            )
+            self.board_frame = tk.Frame(
+                self.window, 
+                relief=tk.RIDGE, 
+                bd=5, 
+                width=self.BOARD_WIDTH*50, 
+                height=self.BOARD_HEIGHT*50
+            )
 
             # cell配置
             self.cells = [[None for _ in range(self.BOARD_WIDTH+2)] for _ in range(self.BOARD_HEIGHT+2)]
@@ -69,7 +80,12 @@ class Reversi:
 
             self.board_frame.pack()
 
-            self.info_frame = tk.Frame(self.window, bg='gray80', width=self.board_frame['width'], height=200)
+            self.info_frame = tk.Frame(
+                self.window, 
+                bg='gray80', 
+                width=self.board_frame['width'], 
+                height=200
+            )
         
             # 誰番か、パスがあったかを表示
             self.info_frame.pack()
@@ -78,6 +94,8 @@ class Reversi:
         self.putlist = []
         self.order_index = 0
         self.DIRECTION = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
+
+        self.stone_num = 0
 
     def opponent(self, player):
         """
@@ -194,6 +212,8 @@ class Reversi:
 
 
         board[position[0]][position[1]] = player.to_color()
+        if test == False:
+            self.stone_num += 1
 
         for d in self.DIRECTION:
             dx, dy = position[1] + d[1], position[0] + d[0]
@@ -249,6 +269,7 @@ class Reversi:
 
         draw_flag = False
         winner = self.ORDER[0]
+        log_str = self.ORDER[0].to_name()
         for p in self.ORDER[1:]:
             if winner.point < p.point:
                 winner = p
@@ -257,16 +278,59 @@ class Reversi:
                 draw_flag = True
 
         if draw_flag:
+            log_str = 'DRAW'
             if self.display == 'gui':
                 tk.messagebox.showinfo('GAME SET', 'DRAW')
             else:
                 print('GAME SET\nDRAW')
 
         else:
+            log_str = winner.to_name()
             if self.display == 'gui':
                 tk.messagebox.showinfo('GAME SET', '{}, WIN!'.format(winner.to_name()))
             else:
                 print('GAME SET\n{}, WIN!'.format(winner.to_name()))
+
+        # 対戦ログ記入
+        # 多人数戦未対応
+        from datetime import datetime
+        ## YYYY-MM-DD HH:MM:SS : xx vs xx -> xx
+        with open('matchlog.txt', 'a') as f:
+            f.write('\n{} : {}({}) vs {}({}) -> {}'.format(
+                datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                self.ORDER[0].to_name(), self.ORDER[0].point,
+                self.ORDER[1].to_name(), self.ORDER[1].point,
+                log_str
+            ))
+
+
+
+    def pass_check(self):
+        '''
+        パスをする人を返す。
+        空リストが返ればパスはなし。
+        '''
+
+        result = []
+
+        if self.stone_num >= self.BOARD_HEIGHT * self.BOARD_WIDTH:
+            # 置ききって終了→全員パス
+            return self.ORDER
+
+        start_player = self.turn
+
+        while len(self.putlist) == 0:
+            result.append(self.turn)
+
+            self.nextturn()
+            self.putlist = self.make_putlist(self.turn)
+
+            if self.turn == start_player:
+                break
+
+        return result
+
+        
 
     @classmethod
     def progress(cls, game, pos):
@@ -282,32 +346,20 @@ class Reversi:
             return
 
         game.put_stone((y,x), game.turn)
-
         game.nextturn()
-
         game.putlist = game.make_putlist(game.turn)
-
         game.show_board_gui()
 
-        start_player = game.turn
-        # パス判定
-        while len(game.putlist) == 0:
-            
-            tk.messagebox.showinfo('GAME INFO', 'PLAYER {}, PASS'.format(game.ORDER.index(game.turn)+1))
-            game.nextturn()
-
-            game.putlist = game.make_putlist(game.turn)
-            game.show_board_gui()
-            
-
-            if start_player == game.turn:
-                break
-
-        if len(game.putlist) == 0:
-            # 終了
+        pass_player = game.pass_check()
+        if len(pass_player) == len(game.ORDER):
+            # ゲーム終了
             game.end()
             game.window.destroy()
             return
+        else:
+            for p in pass_player:
+                tk.messagebox.showinfo('GAME INFO', '{}, PASS'.format(p.to_name()))
+                game.show_board_gui()
 
         if game.turn.group == 'AI':
             # AIに手番を投げる
