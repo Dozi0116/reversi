@@ -3,3 +3,4 @@
 2019-06-03 10:29:40 : changeable_mini_max(49) vs mini_max(15) -> changeable_mini_max
 2019-06-03 10:30:06 : changeable_mini_max(54) vs mini_max(10) -> changeable_mini_max
 2019-06-03 10:37:33 : changeable_mini_max(53) vs mini_max(11) -> changeable_mini_max
+2019-06-14 14:42:03 : montecalro(45) vs random_play(19) -> montecalro

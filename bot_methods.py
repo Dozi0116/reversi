@@ -1,6 +1,7 @@
 # -*- Coding: utf-8 -*-
 
 import copy
+import random
 
 def changeable_mini_max(game):
     """
@@ -235,3 +236,102 @@ def max_only(game):
 
     # print("press ({}, {})".format(max_pos[0], max_pos[1]))
     return max_pos
+
+def random_play(game):
+    """
+    ランダムプレイアウト。
+    おける手から適当な手を返す
+    """
+    put_pos = random.choice(game.putlist)
+
+    print('press ({}, {})'.format(put_pos[0], put_pos[1]))
+
+    return put_pos
+
+
+def montecalro(game):
+    """
+    モンテカルロ法。
+    おける手をランダムプレイアウトする
+    """
+
+    def playout(game, board):
+        """
+        ランダムプレイアウトの関数
+        """
+
+        player = game.opponent(game.turn)
+
+        putlist = game.make_putlist(player, board)
+
+        is_game_end = False
+
+        if len(putlist) == 0:
+            player = game.opponent(player)
+            putlist = game.make_putlist(player, board)
+
+            if len(putlist) == 0:
+                is_game_end = True
+
+        while is_game_end == False:
+            pos = random.choice(putlist)
+            board = game.put_stone(pos, player, test=True, test_board=board)
+            player = game.opponent(player)
+            putlist = game.make_putlist(player, board)
+
+            if len(putlist) == 0:
+                player = game.opponent(player)
+                putlist = game.make_putlist(player, board)
+
+                if len(putlist) == 0:
+                    is_game_end = True
+
+        score = 0
+        for col in board:
+            for cell in col:
+                if cell == game.turn.to_color():
+                    score += 1
+                elif cell == game.opponent(game.turn).to_color():
+                    score -= 1
+
+
+        if score > 0:
+            return 1
+        elif score == 0:
+            return 0
+        else:
+            return -1
+            
+
+    # 何回プレイアウトを行うか。デフォは100回
+    playout_count = 100
+    if 'playout_count' in game.turn.kwargs:
+        playout_count = game.turn.kwargs['playout_count']
+
+    
+    max_win_points = -playout_count # 全負けでこの数字
+    max_win_pos = [game.putlist[0]] # リスト管理する。
+
+    for pos in game.putlist:
+        win_points = 0
+        root_board = game.put_stone(pos, game.turn, test=True)
+
+        for i in range(playout_count):
+            board = copy.deepcopy(root_board)
+            result = playout(game, board)
+            win_points += result # 勝利 -> +1, 引き分け -> +0, 負け -> -1
+
+        print('if put ({}, {}) -> {}point(s)'.format(pos[0], pos[1], win_points))
+        
+        if win_points > max_win_points:
+            max_win_points = win_points
+            max_win_pos = [pos]
+        elif win_points == max_win_points:
+            max_win_pos.append(pos)
+
+    put_pos = random.choice(max_win_pos)
+    print('press ({}, {})'.format(put_pos[0], put_pos[1]))
+        
+    return put_pos
+
+

@@ -12,15 +12,14 @@ def main():
             reversi.Player(
                 'gray1', 
                 'AI', 
-                bot.changeable_mini_max,
-                name='CHANGE_MINI_MAX_BOT', 
-                max_depth=4
+                bot.montecalro,
+                name='BOT1'
             ),
             reversi.Player(
                 'gray99', 
                 'AI', 
-                bot.mini_max, 
-                name='MINI_MAX_BOT'
+                bot.random_play, 
+                name='BOT2'
             )
         ],
         area = 8
