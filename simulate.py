@@ -1,6 +1,13 @@
 # -*- Coding: utf-8 -*-
 
-import reversi
+"""
+現在botは2人用を想定した設計で制作。
+そのため、2人用に特化したreversi_duelを用いると(ほんの少し)動作が早くなります。
+
+GUIの方にreversi_duelは未対応。
+"""
+
+import reversi as reversi
 import bot_methods as bot
 
 def main():
@@ -12,14 +19,16 @@ def main():
             reversi.Player(
                 'gray1', 
                 'AI', 
-                bot.montecalro,
-                name='BOT1'
+                bot.changeable_mini_max,
+                name='BOT1',
+                max_depth=2
             ),
             reversi.Player(
                 'gray99', 
                 'AI', 
-                bot.random_play, 
-                name='BOT2'
+                bot.changeable_mini_max, 
+                name='BOT2',
+                max_depth=5
             )
         ],
         area = 8
@@ -32,8 +41,7 @@ def main():
     while True:
         # print('PLAYER {} TURN'.format(game.ORDER.index(game.turn)+1))
         pos = game.turn.rogic(game)
-        # print('put position -> ({}, {})'.format(pos[0], pos[1]))
-        # print('{}{}'.format(chr(ord('A') + (pos[0] - 1)), pos[1]), end='')
+        print('put position -> ({}, {})'.format(pos[0], pos[1]))
         score += chr(ord('A') + (pos[0] - 1)) +  str(pos[1])
 
         game.put_stone(pos, game.turn)
@@ -55,5 +63,9 @@ def main():
 
     return
 
+import time
 if __name__ == '__main__':
+    start = time.time()
     main()
+    elapsed_time = time.time() - start
+    print("elapsed time is {} [sec]".format(elapsed_time))
