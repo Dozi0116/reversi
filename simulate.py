@@ -19,16 +19,16 @@ def main():
             reversi.Player(
                 'gray1', 
                 'AI', 
-                bot.changeable_mini_max,
+                bot.alpha_beta,
                 name='BOT1',
-                max_depth=2
+                max_depth=3
             ),
             reversi.Player(
                 'gray99', 
                 'AI', 
-                bot.changeable_mini_max, 
+                bot.mini_max, 
                 name='BOT2',
-                max_depth=5
+                max_depth=3
             )
         ],
         area = 8
@@ -41,7 +41,7 @@ def main():
     while True:
         # print('PLAYER {} TURN'.format(game.ORDER.index(game.turn)+1))
         pos = game.turn.rogic(game)
-        print('put position -> ({}, {})'.format(pos[0], pos[1]))
+        print('{} put position -> ({}, {})'.format(game.stone_num, *pos))
         score += chr(ord('A') + (pos[0] - 1)) +  str(pos[1])
 
         game.put_stone(pos, game.turn)
