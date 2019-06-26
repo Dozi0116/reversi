@@ -388,6 +388,32 @@ def soft_max(game):
 
     """
 
+    def softmax_func(args):
+        """
+        ソフトマックス関数
+        数値群を受け取って確率群を返す。
+        """
+
+        s = sum(map(np.exp, args))
+        result = []
+
+        for arg in args:
+            result.append(np.exp(arg) / s)
+
+        return result
+
+    def roulette(pos, chance):
+        num = random.rand() # 0 ~ 1
+
+        percent = 0
+        for i in range(len(chance)):
+            percent += chance[i]
+            if num <= percent:
+                break
+
+        return pos[i]
+
+
     def playout(game, board):
         """
         ランダムプレイアウトの関数
@@ -434,31 +460,23 @@ def soft_max(game):
             return 0
         else:
             return -1
-            
 
-    
-    max_win_points = -playout_count # 全負けでこの数字
-    max_win_pos = [game.putlist[0]] # リスト管理する。
 
-    for pos in game.putlist:
-        win_points = 0
-        root_board = game.put_stone(pos, game.turn, test=True)
+    # 置けるところを評価する
+    score = []
+    for pos in putlist:
+        board = game.put_stone(pos, game.turn, test=True)
+        score.append(static_board_score(game, board))
 
-        for i in range(playout_count):
-            board = copy.deepcopy(root_board)
-            result = playout(game, board)
-            win_points += result # 勝利 -> +1, 引き分け -> +0, 負け -> -1
+    chance = softmax_func(score)
 
-        print('if put ({}, {}) -> {}point(s)'.format(pos[0], pos[1], win_points))
+
+    for count in range(playout_count):
+        # ルーレット選択
+        pos = roulette(putlist, chance)
         
-        if win_points > max_win_points:
-            max_win_points = win_points
-            max_win_pos = [pos]
-        elif win_points == max_win_points:
-            max_win_pos.append(pos)
-
-    put_pos = random.choice(max_win_pos)
-    # print('press ({}, {})'.format(put_pos[0], put_pos[1]))
+        # プレイアウト
+        pass # TODO!!
         
     return put_pos
 
