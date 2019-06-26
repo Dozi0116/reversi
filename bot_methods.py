@@ -367,7 +367,7 @@ def alpha_beta(game):
     for pos in game.putlist:
         # print('PLAYER press ({}, {})'.format(pos[0], pos[1]))
         board = game.put_stone(pos, game.turn, test=True)
-        score = min_calc(game, board, MAX_DEPTH-1, game.stone_num, -9999) # alpha -> min_calcで使う。
+        score = min_calc(game, board, MAX_DEPTH-1, game.stone_num, max_score) # alpha -> min_calcで使う。
 
         if score > max_score:
             max_score = score
@@ -379,3 +379,166 @@ def alpha_beta(game):
 
 
 
+def soft_max(game):
+    """
+    ソフトマックス法
+
+    盤面を評価し、評価点数を引数としてソフトマックス関数に通す。→確率が得られる。
+    得られた確率をもとに、ルーレット選択を行う。
+
+    """
+
+    def playout(game, board):
+        """
+        ランダムプレイアウトの関数
+        """
+
+        player = game.opponent(game.turn)
+
+        putlist = game.make_putlist(player, board)
+
+        is_game_end = False
+
+        if len(putlist) == 0:
+            player = game.opponent(player)
+            putlist = game.make_putlist(player, board)
+
+            if len(putlist) == 0:
+                is_game_end = True
+
+        while is_game_end == False:
+            pos = random.choice(putlist) # 変更あり！→盤面評価に基づくなど
+            board = game.put_stone(pos, player, test=True, test_board=board)
+            player = game.opponent(player)
+            putlist = game.make_putlist(player, board)
+
+            if len(putlist) == 0:
+                player = game.opponent(player)
+                putlist = game.make_putlist(player, board)
+
+                if len(putlist) == 0:
+                    is_game_end = True
+
+        score = 0
+        for col in board:
+            for cell in col:
+                if cell == game.turn.to_color():
+                    score += 1
+                elif cell == game.opponent(game.turn).to_color():
+                    score -= 1
+
+
+        if score > 0:
+            return 1
+        elif score == 0:
+            return 0
+        else:
+            return -1
+            
+
+    
+    max_win_points = -playout_count # 全負けでこの数字
+    max_win_pos = [game.putlist[0]] # リスト管理する。
+
+    for pos in game.putlist:
+        win_points = 0
+        root_board = game.put_stone(pos, game.turn, test=True)
+
+        for i in range(playout_count):
+            board = copy.deepcopy(root_board)
+            result = playout(game, board)
+            win_points += result # 勝利 -> +1, 引き分け -> +0, 負け -> -1
+
+        print('if put ({}, {}) -> {}point(s)'.format(pos[0], pos[1], win_points))
+        
+        if win_points > max_win_points:
+            max_win_points = win_points
+            max_win_pos = [pos]
+        elif win_points == max_win_points:
+            max_win_pos.append(pos)
+
+    put_pos = random.choice(max_win_pos)
+    # print('press ({}, {})'.format(put_pos[0], put_pos[1]))
+        
+    return put_pos
+
+
+
+def max_min(game):
+    """
+    最弱プログラム　max_min法
+
+    mini_maxの評価をすべて反転し、最弱手を打つようにした
+    """
+    
+
+    def min_calc(game, root_board, depth_limit, stone_num, beta):
+        board = root_board[:]
+        if depth_limit <= 0 or stone_num  > game.BOARD_HEIGHT * game.BOARD_WIDTH:
+            return static_board_score(game, board)
+
+        min_score = 9999
+        putlist = game.make_putlist(game.opponent(game.turn), board)
+        if len(putlist) == 0:
+            return min_score
+
+        for pos in putlist:
+            board = copy.deepcopy(root_board)
+
+            board = game.put_stone(pos, game.opponent(game.turn), test=True, test_board=board)
+            score = max_calc(game, board, depth_limit - 1, stone_num + 1, min_score)
+
+            if score < min_score:
+                min_score = score
+
+            if min_score < beta:
+                break
+
+        # print('min_score -> {}'.format(min_score))
+        return min_score
+
+
+    def max_calc(game, root_board, depth_limit, stone_num, alpha):
+        board = root_board[:]
+        if depth_limit <= 0 or stone_num  > game.BOARD_HEIGHT * game.BOARD_WIDTH:
+            return static_board_score(game, board)
+
+        max_score = -9999
+        putlist = game.make_putlist(game.turn, board)
+        if len(putlist) == 0:
+            return max_score
+
+        for pos in putlist:
+            board = copy.deepcopy(root_board)
+
+            board = game.put_stone(pos, game.turn, test=True, test_board=board)
+            score = min_calc(game, board, depth_limit - 1, stone_num + 1, max_score)
+
+            if score > max_score:
+                max_score = score
+
+            if max_score > alpha:
+                break
+
+        # print('max_score -> {}'.format(max_score))
+        return max_score
+
+
+    MAX_DEPTH = 2
+    if 'max_depth' in game.turn.kwargs:
+        MAX_DEPTH = game.turn.kwargs['max_depth']
+
+    min_score = 9999
+    min_pos = game.putlist[0]
+    for pos in game.putlist:
+        # print('PLAYER press ({}, {})'.format(pos[0], pos[1]))
+        board = game.put_stone(pos, game.turn, test=True)
+        score = max_calc(game, board, MAX_DEPTH-1, game.stone_num, min_score) # alpha -> min_calcで使う。
+
+        if score < min_score:
+            min_score = score
+            min_pos = pos
+
+    # print('press ({}, {})'.format(max_pos[0], max_pos[1]))
+
+    return min_pos
