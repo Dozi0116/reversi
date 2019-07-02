@@ -2,6 +2,7 @@
 
 import copy
 import random
+import numpy as np
 
 """
 盤面評価関数系
@@ -386,6 +387,10 @@ def soft_max(game):
     盤面を評価し、評価点数を引数としてソフトマックス関数に通す。→確率が得られる。
     得られた確率をもとに、ルーレット選択を行う。
 
+    モンテカルロ→各手をN回ずつ試行。
+    ソフトマックス→全ての手をN回で試行。
+
+    …必然的にソフトマックス弱い？
     """
 
     def softmax_func(args):
@@ -403,7 +408,7 @@ def soft_max(game):
         return result
 
     def roulette(pos, chance):
-        num = random.rand() # 0 ~ 1
+        num = random.random() # 0 ~ 1
 
         percent = 0
         for i in range(len(chance)):
@@ -411,7 +416,7 @@ def soft_max(game):
             if num <= percent:
                 break
 
-        return pos[i]
+        return pos[i], i
 
 
     def playout(game, board):
@@ -464,19 +469,30 @@ def soft_max(game):
 
     # 置けるところを評価する
     score = []
-    for pos in putlist:
+    for pos in game.putlist:
         board = game.put_stone(pos, game.turn, test=True)
         score.append(static_board_score(game, board))
 
     chance = softmax_func(score)
 
+    win_points = [0 for _ in range(len(game.putlist))] # 各場所に置いたときの期待勝利点数
+
+    # 何回プレイアウトを行うか。デフォは100回
+    playout_count = 100
+    if 'playout_count' in game.turn.kwargs:
+        playout_count = game.turn.kwargs['playout_count']
 
     for count in range(playout_count):
         # ルーレット選択
-        pos = roulette(putlist, chance)
+        pos, index = roulette(game.putlist, chance)
         
         # プレイアウト
-        pass # TODO!!
+        root_board = copy.deepcopy(game.put_stone(pos, game.turn, test=True))
+
+        result = playout(game, root_board)
+        win_points[index] += result # 勝利 -> +1, 引き分け -> +0, 負け -> -1
+        
+    put_pos = game.putlist[win_points.index(max(win_points))]
         
     return put_pos
 

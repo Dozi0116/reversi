@@ -45,3 +45,6 @@
 2019-06-26 11:01:02 : alpha_beta(22) vs mini_max(42) -> mini_max
 2019-06-26 11:23:19 : alpha_beta(40) vs max_min(24) -> alpha_beta
 2019-06-26 11:23:26 : alpha_beta(38) vs max_min(0) -> alpha_beta
+2019-07-02 09:32:20 : alpha_beta(38) vs max_min(0) -> alpha_beta
+2019-07-02 09:37:28 : alpha_beta(53) vs soft_max(11) -> alpha_beta
+2019-07-02 09:38:43 : alpha_beta(43) vs soft_max(21) -> alpha_beta

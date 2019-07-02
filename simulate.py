@@ -21,14 +21,15 @@ def main():
                 'AI', 
                 bot.alpha_beta,
                 name='BOT1',
-                max_depth=4
+                max_depth=2
             ),
             reversi.Player(
                 'gray99', 
                 'AI', 
-                bot.max_min, 
+                bot.soft_max, 
                 name='BOT2',
-                max_depth=4
+                max_depth=4,
+                playout_count=100
             )
         ],
         area = 8
