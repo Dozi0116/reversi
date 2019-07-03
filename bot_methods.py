@@ -6,6 +6,7 @@ import numpy as np
 
 """
 盤面評価関数系
+自分が有利になればなるほど正の値を返す。
 """
 def static_board_score(game, board):
     """
@@ -27,14 +28,104 @@ def static_board_score(game, board):
 
     for y in range(1, game.BOARD_WIDTH+1):
         for x in range(1, game.BOARD_HEIGHT+1):
-            if board[y][x] is None:
-                continue
-            elif board[y][x] == game.turn.to_color():
+            if board[y][x] == game.turn.to_color():
                 score += evaluation[y-1][x-1] # game.boardは外周が含まれているため。
-            else:
-                score -= evaluation[y-1][x-1]
+            elif board[y][x] == game.opponent(game.turn).to_color():
+                score -= evaluation[y-1][x-1] 
 
     return score
+
+
+def static_corner_score(game, board):
+    """
+    boardを受け取り、評価値を返す。
+    角の形を見て点数を算出。
+    """
+
+    # -1 -> 何もない, 0 -> 相手の石, 1 -> 自分の石
+    # 27通りの評価をする
+    # ([盤面], 点数)
+    # 盤面評価Ver1: 大きい知識もなく、ひたすら適当に得点付け
+    # 対称的な盤面はスコアが正負で一致しているはず
+    # 角[石, 石, 石]中央
+    evaluation = [
+        ([-1, -1, -1],   0),
+        ([ 0, -1, -1], -10), 
+        ([ 1, -1, -1],  10),
+        ([-1,  0, -1],   2),
+        ([ 0,  0, -1], -12),
+        ([ 1,  0, -1],  13),
+        ([-1,  1, -1],  -2),
+        ([ 0,  1, -1], -13),
+        ([ 1,  1, -1],  12),
+        ([-1, -1,  0],  -1),
+        ([ 0, -1,  0],  -9),
+        ([ 1, -1,  0],  10),
+        ([-1,  0,  0],   5),
+        ([ 0,  0,  0], -15),
+        ([ 1,  0,  0],   6),
+        ([-1,  1,  0],  -7),
+        ([ 0,  1,  0],  -6),
+        ([ 1,  1,  0],  14),
+        ([-1, -1,  1],   1),
+        ([ 0, -1,  1], -10),
+        ([ 1, -1,  1],   9),
+        ([-1,  0,  1],   7),
+        ([ 0,  0,  1], -14),
+        ([ 1,  0,  1],   6),
+        ([-1,  1,  1],  -5),
+        ([ 0,  1,  1],  -6),
+        ([ 1,  1,  1],  15)
+    ]
+
+    # 四隅を縦横斜めの3方向で見る
+    # テンキーを基準に自分のマス位置を5としたとき、32164987の順で見るべき方向に1を格納
+    LU_corner = 0b11010000 # 左上
+    RU_corner = 0b01101000 # 右上
+    LD_corner = 0b00010110 # 左下
+    RD_corner = 0b00001011 # 右下
+
+    # 78946123の順
+    direction = [
+        (-1, -1), (-1,  0), (-1,  1),
+        ( 0, -1),           ( 0,  1),
+        ( 1, -1), ( 1,  0), ( 1,  1)
+    ]
+
+    corner_order = (LU_corner, RU_corner, LD_corner, RD_corner)
+    pos_order = ((1, 1), (1, game.BOARD_WIDTH), (game.BOARD_HEIGHT, 1), (game.BOARD_HEIGHT, game.BOARD_WIDTH)) # board[pos[0]][pos[1]]
+
+    score = 0
+
+    for flg, pos in zip(corner_order, pos_order):
+        for i in range(len(direction)):
+            if flg & (1 << i) >= 1:
+                # 78946123の順でチェック
+                condition = [-1 for _ in range(3)]
+                
+                for j in range(3):
+                    # 自分の石→1、相手の石→0、何もない→-1
+                    if board[pos[0]+direction[i][0]*j][pos[1]+direction[i][1]*j] == game.turn.to_color():
+                        condition[j] = 1
+                    elif board[pos[0]+direction[i][0]*j][pos[1]+direction[i][1]*j] == game.opponent(game.turn).to_color():
+                        condition[j] = 0
+                    else:
+                        condition[j] = -1
+                
+                # 比較
+                for e in evaluation:
+                    if condition == e[0]:
+                        score += e[1]
+                        break
+
+    return score
+
+
+def calc_score(game, board):
+        if 'evaluation' in game.turn.kwargs:
+            return game.turn.kwargs['evaluation'](game, board)
+        else:
+            return static_board_score(game, board)
 
 
 
@@ -54,7 +145,7 @@ def mini_max(game):
     def min_calc(game, root_board, depth_limit, stone_num):
         board = root_board[:]
         if depth_limit <= 0 or stone_num  > game.BOARD_HEIGHT * game.BOARD_WIDTH:
-            return static_board_score(game, board)
+            return calc_score(game, board)
 
         min_score = 9999
         putlist = game.make_putlist(game.opponent(game.turn), board)
@@ -80,7 +171,7 @@ def mini_max(game):
     def max_calc(game, root_board, depth_limit, stone_num):
         board = root_board[:]
         if depth_limit <= 0 or stone_num  > game.BOARD_HEIGHT * game.BOARD_WIDTH:
-            return static_board_score(game, board)
+            return calc_score(game, board)
 
         max_score = -9999
         putlist = game.make_putlist(game.turn, board)
@@ -149,7 +240,7 @@ def fixed_mini_max(game):
         min_pos = next_poslist[0]
         for next_pos in next_poslist:
             next_board = game.put_stone(next_pos, game.opponent(game.turn), test=True, test_board=board)
-            next_score = static_board_score(game, next_board)
+            next_score = calc_score(game, next_board)
             # print('    next put ({}, {}) -> {} points'.format(next_pos[0], next_pos[1], next_score))
 
             if next_score < min_score:
@@ -180,7 +271,7 @@ def max_only(game):
     max_pos = game.putlist[0]
     for pos in game.putlist:
         board = game.put_stone(pos, game.turn, test=True) # 1手先置きした盤面
-        score = static_board_score(game, board)
+        score = calc_score(game, board)
         # print('if put ({}, {}) -> {} points'.format(pos[0], pos[1], score))
         if score > max_score:
             max_score = score
@@ -304,7 +395,7 @@ def alpha_beta(game):
     def min_calc(game, root_board, depth_limit, stone_num, beta):
         board = root_board[:]
         if depth_limit <= 0 or stone_num  > game.BOARD_HEIGHT * game.BOARD_WIDTH:
-            return static_board_score(game, board)
+            return calc_score(game, board)
 
         min_score = 9999
         putlist = game.make_putlist(game.opponent(game.turn), board)
@@ -333,7 +424,7 @@ def alpha_beta(game):
     def max_calc(game, root_board, depth_limit, stone_num, alpha):
         board = root_board[:]
         if depth_limit <= 0 or stone_num  > game.BOARD_HEIGHT * game.BOARD_WIDTH:
-            return static_board_score(game, board)
+            return calc_score(game, board)
 
         max_score = -9999
         putlist = game.make_putlist(game.turn, board)
@@ -471,7 +562,7 @@ def soft_max(game):
     score = []
     for pos in game.putlist:
         board = game.put_stone(pos, game.turn, test=True)
-        score.append(static_board_score(game, board))
+        score.append(calc_score(game, board))
 
     chance = softmax_func(score)
 
@@ -509,7 +600,7 @@ def max_min(game):
     def min_calc(game, root_board, depth_limit, stone_num, beta):
         board = root_board[:]
         if depth_limit <= 0 or stone_num  > game.BOARD_HEIGHT * game.BOARD_WIDTH:
-            return static_board_score(game, board)
+            return calc_score(game, board)
 
         min_score = 9999
         putlist = game.make_putlist(game.opponent(game.turn), board)
@@ -535,7 +626,7 @@ def max_min(game):
     def max_calc(game, root_board, depth_limit, stone_num, alpha):
         board = root_board[:]
         if depth_limit <= 0 or stone_num  > game.BOARD_HEIGHT * game.BOARD_WIDTH:
-            return static_board_score(game, board)
+            return calc_score(game, board)
 
         max_score = -9999
         putlist = game.make_putlist(game.turn, board)

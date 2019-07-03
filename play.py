@@ -17,8 +17,9 @@ def main():
             reversi.Player(
                 'gray99', 
                 'AI', 
-                bot.montecalro, 
-                name='BOT'
+                bot.alpha_beta, 
+                name='BOT',
+                max_depth=4
             )
         ],
         area = 8,
