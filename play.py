@@ -17,9 +17,11 @@ def main():
             reversi.Player(
                 'gray99', 
                 'AI', 
-                bot.alpha_beta, 
+                bot.soft_max, 
                 name='BOT',
-                max_depth=4
+                max_depth=4,
+                playout_count=100,
+                evaluation=bot.static_corner_score
             )
         ],
         area = 8,

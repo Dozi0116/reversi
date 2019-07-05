@@ -50,35 +50,48 @@ def static_corner_score(game, board):
     # 角[石, 石, 石]中央
     evaluation = [
         ([-1, -1, -1],   0),
-        ([ 0, -1, -1], -10), 
-        ([ 1, -1, -1],  10),
-        ([-1,  0, -1],   2),
-        ([ 0,  0, -1], -12),
-        ([ 1,  0, -1],  13),
-        ([-1,  1, -1],  -2),
-        ([ 0,  1, -1], -13),
-        ([ 1,  1, -1],  12),
-        ([-1, -1,  0],  -1),
-        ([ 0, -1,  0],  -9),
-        ([ 1, -1,  0],  10),
-        ([-1,  0,  0],   5),
-        ([ 0,  0,  0], -15),
-        ([ 1,  0,  0],   6),
-        ([-1,  1,  0],  -7),
-        ([ 0,  1,  0],  -6),
-        ([ 1,  1,  0],  14),
+
         ([-1, -1,  1],   1),
-        ([ 0, -1,  1], -10),
-        ([ 1, -1,  1],   9),
-        ([-1,  0,  1],   7),
-        ([ 0,  0,  1], -14),
-        ([ 1,  0,  1],   6),
+        ([-1, -1,  0],  -1),
+
+        ([-1,  0, -1],   2),
+        ([-1,  1, -1],  -2),
+
+        ([-1,  0,  0],   5),
         ([-1,  1,  1],  -5),
-        ([ 0,  1,  1],  -6),
-        ([ 1,  1,  1],  15)
+
+        ([-1,  0,  1],   7),
+        ([-1,  1,  0],  -7),
+
+        ([ 1, -1, -1],  10),
+        ([ 0, -1, -1], -10),
+
+        ([ 1, -1,  1],   9),
+        ([ 0, -1,  0],  -9),
+
+        ([ 1, -1,  0],  10), 
+        ([ 0, -1,  1], -10),
+
+        ([ 1,  1, -1],  12),
+        ([ 0,  0, -1], -12),
+
+        ([ 1,  1,  1],  15),
+        ([ 0,  0,  0], -15),
+
+        ([ 1,  1,  0],  14),
+        ([ 0,  0,  1], -14),
+
+        ([ 1,  0, -1],  13),
+        ([ 0,  1, -1], -13),
+
+        ([ 1,  0,  1],   6),
+        ([ 0,  1,  0],  -6),
+
+        ([ 1,  0,  0],   6),
+        ([ 0,  1,  1],  -6)
     ]
 
-    # 四隅を縦横斜めの3方向で見る
+    # 四隅を縦横斜めの3方向で見るホーシー
     # テンキーを基準に自分のマス位置を5としたとき、32164987の順で見るべき方向に1を格納
     LU_corner = 0b11010000 # 左上
     RU_corner = 0b01101000 # 右上
@@ -529,7 +542,20 @@ def soft_max(game):
                 is_game_end = True
 
         while is_game_end == False:
-            pos = random.choice(putlist) # 変更あり！→盤面評価に基づくなど
+            # pos選定もsoft_max
+            scores = []
+            turn_flg = 1 if game.turn == player else -1
+            for pos in putlist:
+                test_board = game.put_stone(pos, player, test=True, test_board=board)
+                scores.append(calc_score(game, test_board) * turn_flg)
+
+            # 盤面評価スコアは負の値を取るため、最小値を1にする
+            scores = list(map(lambda x: x - min(scores) + 1, scores))
+
+            chance = softmax_func(scores)  
+
+
+            pos, _ = roulette(putlist, chance) # 変更あり！→盤面評価に基づくなど
             board = game.put_stone(pos, player, test=True, test_board=board)
             player = game.opponent(player)
             putlist = game.make_putlist(player, board)
@@ -563,6 +589,10 @@ def soft_max(game):
     for pos in game.putlist:
         board = game.put_stone(pos, game.turn, test=True)
         score.append(calc_score(game, board))
+        print("pos({}, {}) -> score: {}".format(pos[0], pos[1], score[-1]))
+
+    # 盤面評価スコアは負の値を取るため、最小値を1にする
+    score = list(map(lambda x: x - min(score) + 1, score))
 
     chance = softmax_func(score)
 
@@ -582,6 +612,8 @@ def soft_max(game):
 
         result = playout(game, root_board)
         win_points[index] += result # 勝利 -> +1, 引き分け -> +0, 負け -> -1
+
+    print("win_point -> {}".format(win_points))
         
     put_pos = game.putlist[win_points.index(max(win_points))]
         
