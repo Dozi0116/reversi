@@ -19,16 +19,16 @@ def main():
             reversi.Player(
                 'gray1', 
                 'AI', 
-                bot.fixed_mini_max,
+                bot.alpha_beta,
                 name='BOT1',
-                max_depth=2,
+                max_depth=3,
                 playout_count=100,
-                evaluation=bot.static_corner_score
+                evaluation='mixed'
             ),
             reversi.Player(
                 'gray99', 
                 'AI', 
-                bot.mini_max, 
+                bot.random_play, 
                 name='BOT2',
                 max_depth=2,
                 playout_count=100,
@@ -41,12 +41,10 @@ def main():
     game.game_init()
 
     # game main loop
-    score = '' # 棋譜
     while True:
         # print('PLAYER {} TURN'.format(game.ORDER.index(game.turn)+1))
         pos = game.turn.rogic(game)
         print('{} put position -> ({}, {})'.format(game.stone_num, *pos))
-        score += chr(ord('A') + (pos[0] - 1)) +  str(pos[1])
 
         game.put_stone(pos, game.turn)
         
@@ -58,7 +56,7 @@ def main():
         if len(pass_player) == len(game.ORDER):
             # ゲーム終了
             game.end()
-            print(score)
+            print(game.score)
             return
         else:
             for p in pass_player:

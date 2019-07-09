@@ -96,6 +96,7 @@ class Reversi:
         self.DIRECTION = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
 
         self.stone_num = 0
+        self.score = '' # 棋譜
 
     def opponent(self, player):
         """
@@ -214,6 +215,7 @@ class Reversi:
         board[position[0]][position[1]] = player.to_color()
         if test == False:
             self.stone_num += 1
+            self.score += chr(ord('A') + (position[0] - 1)) +  str(position[1])
 
         for d in self.DIRECTION:
             dx, dy = position[1] + d[1], position[0] + d[0]
@@ -296,11 +298,12 @@ class Reversi:
         from datetime import datetime
         ## YYYY-MM-DD HH:MM:SS : xx vs xx -> xx
         with open('matchlog.txt', 'a') as f:
-            f.write('\n{} : {}({}) vs {}({}) -> {}'.format(
+            f.write('\n{} : {}({}) vs {}({}) -> {}\nscore -> {}'.format(
                 datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 self.ORDER[0].to_name(), self.ORDER[0].point,
                 self.ORDER[1].to_name(), self.ORDER[1].point,
-                log_str
+                log_str,
+                self.score
             ))
 
 
