@@ -4,25 +4,29 @@ python3環境で動作するリバーシゲーム
 ## 動作環境
 - python3.7
 - numpyが入っている
-- python3-qtが入っている
+- python3-tkが入っている
 
 ### virtualenv
 virtualenvを用いて、動作環境を構築できる
 <details>
-<summary>bash,zsh</summary>
-```bash
-$ virtualenv .
-$ source bin/activate
-$ pip install -r freeze.txt
-```
+  <summary>bash,zsh</summary>
+  <pre>
+  <code>
+  $ virtualenv .
+  $ source bin/activate
+  $ pip install -r freeze.txt
+  </code>
+  </pre>
 </details>
 <details>
-<summary>fish</summary>
-```fish
-virtualenv .
-source bin/activate.fish
-pip install -r freeze.txt
-```
+  <summary>fish</summary>
+  <pre>
+  <code>
+  $ virtualenv .
+  $ source bin/activate.fish
+  $ pip install -r freeze.txt
+  </code>
+  </pre>
 </details>
 
 ## あそびかた
