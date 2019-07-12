@@ -104,6 +104,8 @@ venv.bak/
 .mypy_cache/
 
 matchlog*.txt
+static_border_score.py
+memo.txt
 
 
 # Created by https://www.gitignore.io/api/virtualenv
