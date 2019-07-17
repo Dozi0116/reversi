@@ -10,19 +10,23 @@ python3環境で動作するリバーシゲーム
 virtualenvを用いて、動作環境を構築できる
 <details>
   <summary>bash,zsh</summary>
-  ``` shell
+  <pre>
+  <code>
   $ virtualenv .
   $ source bin/activate
   $ pip install -r freeze.txt
-  ```
+  </code>
+  </pre>
 </details>
 <details>
   <summary>fish</summary>
-  ``` shell
+  <pre>
+  <code>
   $ virtualenv .
   $ source bin/activate.fish
   $ pip install -r freeze.txt
-  ```
+  </code>
+  </pre>
 </details>
 
 ## あそびかた
