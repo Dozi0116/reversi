@@ -1,0 +1,14 @@
+{
+    "bot1": {
+        "method": "alpha_beta",
+        "max_depth": 3,
+        "playout_count": 100,
+        "evaluation": "static_board_score"
+    },
+    "bot2": {
+        "method": "alpha_beta",
+        "max_depth": 3,
+        "playout_count": 100,
+        "evaluation": "static_board_score"
+    }
+}
