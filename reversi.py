@@ -8,8 +8,8 @@ import random
 
 
 class Player:
-    def __init__(self, color, group='human', rogic=None, name=None, **kwargs):
-        self.color = color
+    def __init__(self, group='human', rogic=None, name=None, **kwargs):
+        self.color = None
         self.point = 0
         self.group = group
         self.rogic = rogic
@@ -106,9 +106,13 @@ class Reversi:
 
     def game_init(self):
         # initialize
+        
         print(self.ORDER[0].to_color(), self.ORDER[1].to_color())
         self.order_index = random.randint(0, 1) # 0 or 1
         self.turn = self.ORDER[self.order_index]
+        # 先手が黒
+        self.turn.color = 'gray1'
+        self.opponent(self.turn).color = 'gray99'
         self.put_stone([4, 4], self.opponent(self.turn))
         self.put_stone([4, 5], self.turn)
         self.put_stone([5, 4], self.turn)

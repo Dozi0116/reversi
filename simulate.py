@@ -9,32 +9,14 @@ GUIの方にreversi_duelは未対応。
 
 import reversi as reversi
 import bot_methods as bot
+import load
 
 def main():
     # reversi program
     
     ## game initialize
     game = reversi.Reversi(
-        [
-            reversi.Player(
-                'gray1', 
-                'AI', 
-                bot.alpha_beta,
-                name='BOT1',
-                max_depth=3,
-                playout_count=100,
-                evaluation='mixed'
-            ),
-            reversi.Player(
-                'gray99', 
-                'AI', 
-                bot.random_play, 
-                name='BOT2',
-                max_depth=2,
-                playout_count=100,
-                evaluation=bot.static_board_score
-            )
-        ],
+        load.parse_config('simulate_config.json'),
         area = 8
     )
 
