@@ -7,6 +7,9 @@
 #define WHITE -1
 #define EMPTY 0
 
+#define TRUE 1
+#define FALSE 0
+
 #define UP_LEFT 0x80
 #define UP_CENTER 0x40
 #define UP_RIGHT 0x20

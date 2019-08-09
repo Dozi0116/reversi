@@ -28,7 +28,9 @@ typedef struct Game{
 } Game;
 
 extern void game_init(struct Game *game);
-extern void make_putlist(struct Game *game, int player);
+extern int make_putlist(struct Game *game, int player);
 extern void put_stone(struct Game *game, int pos[], int player);
+extern int next_turn(struct Game *game);
+extern void show_board(Game *game);
 
 #endif
