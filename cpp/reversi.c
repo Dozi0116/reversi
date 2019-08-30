@@ -17,7 +17,7 @@ const int DIRECTION[DIRECTION_SIZE][2] = {
 
 void game_init(Game *game) {
     int y, x;
-    printf("Reversi Game\n"); // このprintf文がないと動かない
+    printf("Reversi Game\n"); // このprintf文がないと動かない、 windowsではなくても動作したからやっぱり環境依存…。
     for (y = 0; y < BOARD_SIZE+2;y++){
         for (x = 0;x < BOARD_SIZE+2;x++){
             game -> board[y][x] = EMPTY;
@@ -114,7 +114,7 @@ void put_stone(struct Game *game,
                 int_list_append(game -> score[game -> stone_num], pos2i(y, x));
                 score_index++;
                 dy += DIRECTION[i][0];
-                dx += DIRECTION[i][0];
+                dx += DIRECTION[i][1];
             } while (game -> board[dy][dx] == -player);           
        }
    }
