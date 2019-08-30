@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "reversi.h"
 
+#define buff_erase() while(getchar() != '\n')
+
 int c2i(char c) {
     if ('A' <= c && c <= 'Z') {
         return c - 'A';
@@ -17,6 +19,7 @@ int c2i(char c) {
 void input(char command[]) {
     while (TRUE) {
         scanf("%2[^\n]%*[^\n]", command);
+        buff_erase();
 
         if (
             ('1' <= command[0] && command[0] <= '8') &&
@@ -27,7 +30,7 @@ void input(char command[]) {
         ) {
             return;
         } else {
-            printf("error\n"); // TODO 不正な入力を入れると、以降scanfが正しく動作せず、無限ループに陥る。
+            printf("input error. Please try again.\n");
         }
     }
 }
@@ -42,17 +45,32 @@ int main(void) {
 
     while (TRUE) {
         show_board(&game);
-        printf("put pos (ex. 1A)-> ");
-        input(command);
 
-        pos[0] = c2i(command[0]);
-        pos[1] = c2i(command[1]) + 1; // 文字「A」がインデックス「1」に対応。
+        printf("put pos (ex. 1A)-> ");
+        while (TRUE) {
+            input(command);
+
+            pos[0] = c2i(command[0]);
+            pos[1] = c2i(command[1]) + 1; // 文字「A」がインデックス「1」に対応。
+
+            if (game.reverse[pos[0]][pos[1]] != 0) {
+                break;
+            } else {
+                printf("position error. Please try again.\n");
+            }
+        }
 
         printf("press -> (%d(%d), %c(%d))\n", pos[0], pos[0], pos[1] + 'A' - 1, pos[1]);
         put_stone(&game, pos, game.turn);
-        show_board(&game);
-        break;
+
+        if (next_turn(&game) == TRUE) {
+            break;
+        }
     }
+
+    printf("game set!");
+    show_board(&game);
+
     
     return 0;
 }
