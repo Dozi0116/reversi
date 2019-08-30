@@ -44,10 +44,15 @@ void game_init(Game *game) {
 
     put_stone(game, start_pos[0], game -> turn);
     put_stone(game, start_pos[1], game -> turn);
-    put_stone(game, start_pos[2], (game -> turn) * -1);
-    put_stone(game, start_pos[3], (game -> turn) * -1);
+    put_stone(game, start_pos[2], opponent(game -> turn));
+    put_stone(game, start_pos[3], opponent(game -> turn));
 
     make_putlist(game, game -> turn);
+}
+
+int opponent(int player) {
+    // BLACKならWHITEを、WHITEならBLACKを返す。
+    return player == BLACK ? WHITE : BLACK;
 }
 
 int make_putlist(struct Game *game,
@@ -69,11 +74,11 @@ int make_putlist(struct Game *game,
             for (i = 0;i < 8;i++) {
                 dy = y + DIRECTION[i][0];
                 dx = x + DIRECTION[i][1];
-                if (game -> board[dy][dx] == -player) {
+                if (game -> board[dy][dx] == opponent(player)) {
                     do {
                         dy += DIRECTION[i][0];
                         dx += DIRECTION[i][1];
-                    } while (game -> board[dy][dx] == -player);
+                    } while (game -> board[dy][dx] == opponent(player));
                     
                     if (game -> board[dy][dx] == player) {
                         is_put = TRUE;
@@ -115,7 +120,7 @@ void put_stone(struct Game *game,
                 score_index++;
                 dy += DIRECTION[i][0];
                 dx += DIRECTION[i][1];
-            } while (game -> board[dy][dx] == -player);           
+            } while (game -> board[dy][dx] == opponent(player));           
        }
    }
 
@@ -130,12 +135,12 @@ int next_turn(Game *game) {
 
     int is_game_end = FALSE;
     int is_put;
-    game -> turn *= -1;
+    game -> turn = opponent(game -> turn);
     is_put = make_putlist(game, game -> turn);
 
     if (is_put == FALSE) {
         // パス
-        game -> turn *= -1;
+        game -> turn = opponent(game -> turn);
         is_put = make_putlist(game, game -> turn);
 
         if (is_put == FALSE) {
