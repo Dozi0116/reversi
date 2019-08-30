@@ -17,7 +17,7 @@ const int DIRECTION[DIRECTION_SIZE][2] = {
 
 void game_init(Game *game) {
     int y, x;
-    printf("Reversi Game\n"); // このprintf文がないと動かない、 windowsではなくても動作したからやっぱり環境依存…。
+
     for (y = 0; y < BOARD_SIZE+2;y++){
         for (x = 0;x < BOARD_SIZE+2;x++){
             game -> board[y][x] = EMPTY;
@@ -28,12 +28,10 @@ void game_init(Game *game) {
     game -> turn = BLACK;
     game -> stone_num = 0;
 
-    game -> score = (INT_LIST **)malloc(sizeof(INT_LIST *) * (BOARD_SIZE * BOARD_SIZE));
-
-    int i;
-    for (i = 0; i < (BOARD_SIZE * BOARD_SIZE);i++){
-        game -> score[i] = new_int_list(1);
-    }
+    /*
+    scoreのとり方を変更
+    char score[64][8][8]として、盤面の情報を毎ターン保持しておく方向に変更。
+    */
     
     int start_pos[4][2] = {
         {4, 4},
@@ -92,6 +90,11 @@ int make_putlist(struct Game *game,
     return is_put;
 }
 
+/*
+* TODO restore関数
+* void restore(Game *game, int score_index);
+*/
+
 
 void put_stone(struct Game *game,
                int pos[],
@@ -106,7 +109,6 @@ void put_stone(struct Game *game,
    int score_index = 0;
 
    game -> board[y][x] = player;
-   game -> score[game -> stone_num][score_index].data = pos2i(y, x);
    score_index++;
 
    for (i = 0; i < DIRECTION_SIZE;i++) {
@@ -116,7 +118,6 @@ void put_stone(struct Game *game,
             dx = x + DIRECTION[i][1];
             do {
                 game -> board[dy][dx] = player;
-                int_list_append(game -> score[game -> stone_num], pos2i(y, x));
                 score_index++;
                 dy += DIRECTION[i][0];
                 dx += DIRECTION[i][1];
@@ -124,8 +125,14 @@ void put_stone(struct Game *game,
        }
    }
 
-    int_list_append(game -> score[game -> stone_num], -1);
-    (game -> stone_num)++;
+   // 棋譜更新
+   int j;
+   for (i = 0;i < BOARD_SIZE+2;i++) {
+       for(j = 0;j < BOARD_SIZE+2;j++) {
+           game -> score[game -> stone_num][i][j] = game -> board[i][j];
+       }
+   }
+   (game -> stone_num)++;
 }
 
 

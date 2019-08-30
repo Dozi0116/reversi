@@ -2,10 +2,11 @@
 #define CONST_H
 
 #define BOARD_SIZE 8
+#define PLAYERS 2
 
 #define BLACK 1
-#define WHITE -1
-#define EMPTY 0
+#define WHITE 0
+#define EMPTY -1
 
 #define TRUE 1
 #define FALSE 0

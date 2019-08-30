@@ -24,7 +24,8 @@ typedef struct Game{
     unsigned char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
     int turn;
     int stone_num;
-    struct INT_LIST **score; // 最大数をひっくり返すとき盤面の両端が自分の石になってる -> BOARD_SIZE - 2
+    // struct INT_LIST **score; // 最大数をひっくり返すとき盤面の両端が自分の石になってる -> BOARD_SIZE - 2
+    char score[BOARD_SIZE*BOARD_SIZE][BOARD_SIZE+2][BOARD_SIZE+2]; // 棋譜。n手目の盤面をscore[n-1]に保持。
 } Game;
 
 extern void game_init(struct Game *game);
