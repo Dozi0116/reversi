@@ -50,7 +50,7 @@ void game_init(Game *game) {
     put_stone(game, start_pos[2], opponent(game -> turn));
     put_stone(game, start_pos[3], opponent(game -> turn));
 
-    make_putlist(game, game -> turn);
+    make_reverse(game, game -> turn);
 }
 
 int opponent(int player) {
@@ -58,7 +58,7 @@ int opponent(int player) {
     return player == BLACK ? WHITE : BLACK;
 }
 
-int make_putlist(struct Game *game,
+int make_reverse(struct Game *game,
                   int player) {
     /*
     playerとboardからひっくり返せる場所を見つけて返す。
@@ -148,12 +148,12 @@ int next_turn(Game *game) {
     int is_game_end = FALSE;
     int is_put;
     game -> turn = opponent(game -> turn);
-    is_put = make_putlist(game, game -> turn);
+    is_put = make_reverse(game, game -> turn);
 
     if (is_put == FALSE) {
         // パス
         game -> turn = opponent(game -> turn);
-        is_put = make_putlist(game, game -> turn);
+        is_put = make_reverse(game, game -> turn);
 
         if (is_put == FALSE) {
             is_game_end = TRUE;
@@ -209,4 +209,16 @@ void show_board(Game *game) {
             break;
     }
     printf("o -> %d, x -> %d\n", b_count, w_count);
+}
+
+void prev_board(Game *game, int index, int player) {
+    int x, y;
+
+    for (y = 1;y < BOARD_SIZE+1;y++) {
+        for (x = 1;x < BOARD_SIZE+1;x++) {
+            game -> board[y][x] = game -> score[index-1][y][x];
+        }
+    }
+
+    make_reverse(game, player);
 }

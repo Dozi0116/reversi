@@ -30,9 +30,10 @@ typedef struct Game{
 
 extern void game_init(struct Game *game);
 extern int opponent(int player);
-extern int make_putlist(struct Game *game, int player);
+extern int make_reverse(struct Game *game, int player);
 extern void put_stone(struct Game *game, int pos[], int player);
 extern int next_turn(struct Game *game);
 extern void show_board(Game *game);
+extern void prev_board(Game *game, int index, int player);
 
 #endif
