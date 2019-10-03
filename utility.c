@@ -1,5 +1,6 @@
 #include "const.h"
 #include <stdio.h>
+#include "reversi.h"
 
 #define buff_erase() while(getchar() != '\n')
 
@@ -33,4 +34,20 @@ void input(char command[]) {
             printf("input error. Please try again.\n");
         }
     }
+}
+
+int make_putlist(char reverse[BOARD_SIZE+2][BOARD_SIZE+2], int putlist[][2]) {
+    int length = 0;
+    int x, y;
+    for (y = 1;y < BOARD_SIZE+1;y++) {
+        for (x = 1;x < BOARD_SIZE+1;x++) {
+            if (reverse[y][x] != 0) {
+                putlist[length][0] = y;
+                putlist[length][1] = x;
+                length++;
+            }
+        }
+    }
+
+    return length;
 }
