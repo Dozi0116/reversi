@@ -10,26 +10,12 @@ int main(void) {
     // ゲームで双方のプレイヤーが使うロジックを突っ込む。
     void (*rogic[PLAYERS])(struct Game*, int []);
     rogic[BLACK] = player;
-    rogic[WHITE] = player;
+    rogic[WHITE] = bot_random;
 
     printf("%d\n", game.turn);
 
     while (TRUE) {
         show_board(&game);
-
-        // printf("put pos (ex. 1A)-> ");
-        // while (TRUE) {
-        //     input(command);
-
-        //     pos[0] = c2i(command[0]);
-        //     pos[1] = c2i(command[1]) + 1; // 文字「A」がインデックス「1」に対応。
-
-        //     if (game.reverse[pos[0]][pos[1]] != 0) {
-        //         break;
-        //     } else {
-        //         printf("position error. Please try again.\n");
-        //     }
-        // }
 
         rogic[game.turn](&game, pos);
 
@@ -41,7 +27,7 @@ int main(void) {
         }
     }
 
-    printf("game set!");
+    printf("game set!\n");
     show_board(&game);
 
     
