@@ -11,5 +11,6 @@ int pos[] ... 置く予定の場所を格納する。 pos[0]は行(1～8)、pos[
 
 // 対人戦のときに使う。人間が標準入力から受け取る。
 extern void player(struct Game *game, int pos[]);
+extern void bot_random(struct Game *game, int pos[]);
 
 #endif
