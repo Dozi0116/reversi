@@ -51,3 +51,35 @@ int make_putlist(char reverse[BOARD_SIZE+2][BOARD_SIZE+2], int putlist[][2]) {
 
     return length;
 }
+
+int len(int arr[]) {
+    return sizeof(arr) / sizeof(arr[0]);
+}
+
+int len(double arr[]) {
+    return sizefo(arr) / sizeof(arr[0]);
+}
+
+int min(int arr[]) {
+    int i = 0;
+    int num = arr[0];
+    for (i = 0;i < len(arr);i++) {
+        if (num > arr[i]) {
+            num = arr[i];
+        }
+    }
+
+    return num;
+}
+
+int min(double arr[]) {
+    int i = 0;
+    int num = arr[0];
+    for (i = 0;i < len(arr);i++) {
+        if (num > arr[i]) {
+            num = arr[i];
+        }
+    }
+
+    return num;
+}
