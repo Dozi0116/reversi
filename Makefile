@@ -1,5 +1,5 @@
-simulate: simulate.o list.o reversi.o logic.o utility.o
-	gcc simulate.o list.o reversi.o logic.o utility.o -o simulate
+simulate: simulate.o list.o reversi.o logic.o utility.o eval.o
+	gcc simulate.o list.o reversi.o logic.o utility.o eval.o -o simulate
 
 simulate.o: simulate.c
 	gcc -c simulate.c
@@ -15,3 +15,6 @@ logic.o: logic.c
 
 utility.o: utility.c
 	gcc -c utility.c
+
+eval.o: eval.c
+	gcc -c eval.c
