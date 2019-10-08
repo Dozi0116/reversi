@@ -211,7 +211,9 @@ void show_board(Game *game) {
     printf("o -> %d, x -> %d\n", b_count, w_count);
 }
 
-void prev_board(Game *game, int index, int player) {
+void prev_board(Game *game,
+                int index,
+                int player) {
     int x, y;
 
     for (y = 1;y < BOARD_SIZE+1;y++) {
