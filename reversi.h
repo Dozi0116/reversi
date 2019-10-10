@@ -20,7 +20,7 @@
 #define i2col(i) i%(BOARD_SIZE+2)
 
 typedef struct Game{
-    int board[BOARD_SIZE+2][BOARD_SIZE+2];
+    char board[BOARD_SIZE+2][BOARD_SIZE+2];
     unsigned char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
     int turn;
     int stone_num;
@@ -35,5 +35,14 @@ extern void put_stone(struct Game *game, int pos[], int player);
 extern int next_turn(struct Game *game);
 extern void show_board(Game *game);
 extern void prev_board(Game *game, int index, int player);
+extern int make_putlist(char reverse[BOARD_SIZE+2][BOARD_SIZE+2], char putlist[][2]);
+extern int make_board_to_putlist(char board[BOARD_SIZE+2][BOARD_SIZE+2],
+    int player,
+    char reverse[BOARD_SIZE+2][BOARD_SIZE+2],
+    char putlist[][2]);
+extern void put_stone_test(char board[BOARD_SIZE+2][BOARD_SIZE+2],
+    char reverse[BOARD_SIZE+2][BOARD_SIZE+2],
+    int pos[],
+    int player);
 
 #endif

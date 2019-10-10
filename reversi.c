@@ -224,3 +224,91 @@ void prev_board(Game *game,
 
     make_reverse(game, player);
 }
+
+int make_putlist(char reverse[BOARD_SIZE+2][BOARD_SIZE+2], char putlist[][2]) {
+    int length = 0;
+    int x, y;
+    for (y = 1;y < BOARD_SIZE+1;y++) {
+        for (x = 1;x < BOARD_SIZE+1;x++) {
+            if (reverse[y][x] != 0) {
+                putlist[length][0] = y;
+                putlist[length][1] = x;
+                length++;
+            }
+        }
+    }
+
+    return length;
+}
+
+int make_board_to_putlist(char board[BOARD_SIZE+2][BOARD_SIZE+2],
+                 int player,
+                 char reverse[BOARD_SIZE+2][BOARD_SIZE+2],
+                 char putlist[][2]) {
+    /*
+    playerとboardからひっくり返せる場所を見つけて返す。
+    返り値は置けるかどうか。TRUEで置ける。
+    */
+
+   int y, x;
+   int dy, dx;
+   int i;
+   int index = 0;
+
+    for (y = 1;y <= BOARD_SIZE;y++) {
+        for (x = 1;x <= BOARD_SIZE;x++) {
+            reverse[y][x] = 0; // 初期化
+            if (board[y][x] != EMPTY) continue;
+            for (i = 0;i < 8;i++) {
+                dy = y + DIRECTION[i][0];
+                dx = x + DIRECTION[i][1];
+                if (board[dy][dx] == opponent(player)) {
+                    do {
+                        dy += DIRECTION[i][0];
+                        dx += DIRECTION[i][1];
+                    } while (board[dy][dx] == opponent(player));
+                    
+                    if (board[dy][dx] == player) {
+                        reverse[y][x] |= FLAG[i];
+                        putlist[index][0] = y;
+                        putlist[index][1] = x;
+                        index++;
+                    }
+                }
+            }
+        }
+    }
+
+    return index;
+}
+
+void put_stone_test(char board[BOARD_SIZE+2][BOARD_SIZE+2],
+    char reverse[BOARD_SIZE+2][BOARD_SIZE+2],
+    int pos[],
+    int player) {
+    /*
+    boardのposにplayerの石を置く。
+    */
+
+   int y = pos[0], x = pos[1];
+   int dy, dx;
+   int i;
+   int score_index = 0;
+
+   board[y][x] = player;
+   score_index++;
+
+   for (i = 0; i < DIRECTION_SIZE;i++) {
+       if ((reverse[y][x] & FLAG[i]) != 0) {
+           // その方向に返すことができる
+            dy = y + DIRECTION[i][0];
+            dx = x + DIRECTION[i][1];
+            do {
+                board[dy][dx] = player;
+                score_index++;
+                dy += DIRECTION[i][0];
+                dx += DIRECTION[i][1];
+            } while (board[dy][dx] == opponent(player));           
+       }
+   }
+}
