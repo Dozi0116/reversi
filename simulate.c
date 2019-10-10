@@ -10,7 +10,7 @@ int main(void) {
     // ゲームで双方のプレイヤーが使うロジックを突っ込む。
     void (*rogic[PLAYERS])(struct Game*, int []);
     rogic[BLACK] = player;
-    rogic[WHITE] = bot_random;
+    rogic[WHITE] = bot_softmax;
 
     printf("%d\n", game.turn);
 
