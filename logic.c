@@ -120,7 +120,6 @@ void node_init(Node *node,
 
 void expand(Game *game, Node *node) {
     /* 末端ノードを展開する */
-    //printf("    in expand function\n");
 
     // 置ける場所を求める
     int i, j, k;
@@ -129,12 +128,11 @@ void expand(Game *game, Node *node) {
     int pos[2];
     char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
     int length = make_board_to_putlist(node -> board, node -> player, reverse, putpos);
-    //printf("    declaration finished!\n");
 
     if (length == 0) {
         printf("length == 0\n");
-        // ゲーム終了　これより下のノードはない。
-        // 勝利しているならボーナスポイントを追加したい
+        // パスの可能性がある。ゲーム終了ではない可能性
+        // TODO
     } else {
         for (i = 0;i < length;i++) {
             // boardをコピー
@@ -143,10 +141,12 @@ void expand(Game *game, Node *node) {
                     putted_board[j][k] = node -> board[j][k];
                 }
             }
+
             pos[0] = putpos[i][0];
             pos[1] = putpos[i][1];
             put_stone_test(putted_board, reverse, pos, node -> player);
             node -> children[i] = (Node *)malloc(sizeof(Node));
+            // 相手の番を考慮できていない→マイナス倍するか何かで考慮しないと
             node_init(node -> children[i], node, putted_board, eval(putted_board), opponent(node -> player));
         }
 
@@ -201,7 +201,7 @@ void propagation(Game *game, Node *node) {
 }
 
 void bot_softmax(Game *game, int pos[]) {
-    const int max_count = 10;
+    const int max_count = 1500;
     int count;
     const int origin_stone_num = game -> stone_num;
 
@@ -223,45 +223,32 @@ void bot_softmax(Game *game, int pos[]) {
     //printf("root = %p\n", &root);
 
     for (i = 0;i < max_count;i++) {
-        //printf("check %d\n", i);
+        // printf("check %d\n", i);
         // 子ノードまで掘り下げ
         target = search(&root);
-        //printf("  target searched!\n");
-        //printf("target = %p\n", target);
 
         char putpos[30][2];
         char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
 
         index = make_board_to_putlist(root.board, root.player, reverse, putpos);
-        //printf("  maked putlist!\n");
+        // パスすることを何も考慮できていない…
 
         if (index == 0) {
-            // 勝敗がわかっているノードの末端
-            //printf("  game end?\n");
+            // 勝敗がわかっているノードの末端？
+
+            // ここかexpandでパスについての処理を書いてあげる TODO
 
             // 勝ちなら評価点をちょっとあげたい
 
         } else {
             // 勝敗がわかっていないノードの末端
-            //printf("  game continue?\n");
             // ノードを生成
             expand(game, target);
-            //printf("  node expanded!\n");
 
             // スコアを伝搬させていく
             propagation(game, target);
         }
     }
-    // int i;
-    // for (i = 0;i < length;i++) {
-    //     win_point[i] = 0;
-    //     for (count = 0;count < max_count;count++) {
-    //         win_point[i] += softmax_playout(game, game -> turn); // TODO
-    //     }
-
-    //     // 盤面を巻き戻す
-    //     prev_board(game, origin_stone_num, game -> turn);
-    // }
 
     double max_score = root.children[0] -> score;
     pos[0] = putpos[0][0];
