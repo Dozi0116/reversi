@@ -3,11 +3,10 @@
 
 #include "reversi.h"
 
+#define len(arr) sizeof(arr)/sizeof(arr[0]) 
+
 extern int c2i(char c);
-extern int input(char command[]);
-extern int len_i(int arr[]);
-extern int len_d(double arr[]);
-extern int min_i(int arr[]);
-extern int min_d(double arr[]);
+extern void input(char command[]);
+
 
 #endif

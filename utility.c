@@ -1,8 +1,10 @@
 #include "const.h"
 #include <stdio.h>
 #include "reversi.h"
+#include "utility.h"
 
 #define buff_erase() while(getchar() != '\n')
+
 
 int c2i(char c) {
     if ('A' <= c && c <= 'Z') {
@@ -34,38 +36,4 @@ void input(char command[]) {
             printf("input error. Please try again.\n");
         }
     }
-}
-
-
-
-int len_i(int arr[]) {
-    return sizeof(arr) / sizeof(arr[0]);
-}
-
-int len_d(double arr[]) {
-    return sizeof(arr) / sizeof(arr[0]);
-}
-
-int min_i(int arr[]) {
-    int i = 0;
-    int num = arr[0];
-    for (i = 0;i < len_i(arr);i++) {
-        if (num > arr[i]) {
-            num = arr[i];
-        }
-    }
-
-    return num;
-}
-
-int min_d(double arr[]) {
-    int i = 0;
-    int num = arr[0];
-    for (i = 0;i < len_d(arr);i++) {
-        if (num > arr[i]) {
-            num = arr[i];
-        }
-    }
-
-    return num;
 }
