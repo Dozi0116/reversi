@@ -12,7 +12,7 @@ int pos[] ... 置く予定の場所を格納する。 pos[0]は行(1～8)、pos[
 typedef struct Node {
     /* ソフトマックス法で使う木 */
     struct Node *parent; // 親ノード
-    struct Node *children[60]; // 子ノードたち
+    struct Node *children[30]; // 子ノードたち
     char board[BOARD_SIZE+2][BOARD_SIZE+2]; // その時の盤面、できれば保持したくないが…
     int player; // このときに石を置く側
     int child_num; // childrenの要素数

@@ -21,7 +21,7 @@
 
 typedef struct Game{
     char board[BOARD_SIZE+2][BOARD_SIZE+2];
-    unsigned char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
+    char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
     int turn;
     int stone_num;
     // struct INT_LIST **score; // 最大数をひっくり返すとき盤面の両端が自分の石になってる -> BOARD_SIZE - 2

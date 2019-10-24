@@ -19,6 +19,7 @@
 
 int softmax_playout(struct Game *game, int pos[2]);
 void node_init(Node *node,
+    Node *parent,
     char board[BOARD_SIZE+2][BOARD_SIZE+2],
     double score,
     int player); // OK
@@ -50,7 +51,7 @@ void player(Game *game, int pos[]) {
 }
 
 void bot_random(Game *game, int pos[]) {
-    char putpos[60][2];
+    char putpos[30][2];
     int index = 0;
 
     int length = make_putlist(game -> reverse, putpos);
@@ -59,74 +60,6 @@ void bot_random(Game *game, int pos[]) {
     pos[0] = putpos[index][0];
     pos[1] = putpos[index][1];
 }
-
-// int softmax_playout(Game *game, int pos[2]) {
-
-//     int my_player = game -> turn;
-
-//     put_stone(game, pos, game -> turn);
-//     int is_game_end = next_turn(game);
-
-//     while (is_game_end != TRUE) {
-
-//         // 置ける手を出す
-//         int putpos[60][2];
-//         int length = make_putlist(game, putpos);
-
-//         // 盤面を評価
-//         int i;
-//         int eval_score[length];
-//         for (i = 0; i < length;i++) {
-//             eval_score[i] = eval(game, game -> turn);
-//         }
-
-//         // 評価値を正の数にする
-//         int border = min(eval_score);
-
-//         // 評価値をソフトマックス関数にかける
-//         int softmax_score[length];
-//         softmax_func(eval_score, softmax_score);
-
-//         // softmax_scoreを昇順に並べ替え
-
-//         // ルーレット選択
-//         double chance = (double)rand() / RAND_MAX;
-//         double probability = 0;
-//         for (i = 0;i < length;i++) {
-//             probability += softmax_score[i];
-//             if (probability >= chance) {
-
-//                 break;
-//             }
-//         }
-
-//         // put_stone(game, pos, game -> turn);
-//         // is_game_end = next_turn(game);
-//     }
-
-//     int x, y, point = 0;
-//     for (y = 1;y < BOARD_SIZE;y++) {
-//         for (x = 1;x < BOARD_SIZE;x++) {
-//             if (game -> board[y][x] == my_player) {
-//                 point += 1;
-//             } else if (game -> board[y][x] == opponent(my_player)) {
-//                 point -= 1;
-//             }
-//         }
-//     }
-
-//     if (point == 0) {
-//         // 引き分け
-//         return 0;
-//     } else if (point > 0) {
-//         // 勝ち
-//         return 1;
-//     } else {
-//         // 負け
-//         return -1;
-//     }
-// }
-
 
 
 struct Node *roulette(Node *nodes[],
@@ -151,6 +84,7 @@ struct Node *search(Node *node) {
     *  これ以上打つべき点が無い→末端ノード
     */
 
+    //printf("SEARCH...\n");
     if (node -> children[0] == NULL) {
        // 子ノードがいない
        return node; 
@@ -160,13 +94,14 @@ struct Node *search(Node *node) {
 }
 
 void node_init(Node *node,
+    Node *parent,
     char board[BOARD_SIZE+2][BOARD_SIZE+2],
     double score,
     int player) {
-    node -> parent = NULL;
+    node -> parent = parent;
     
     int i, j;
-    for (i = 0;i < 60;i++) {
+    for (i = 0;i < 30;i++) {
         node -> children[i] = NULL;
     }
 
@@ -185,16 +120,19 @@ void node_init(Node *node,
 
 void expand(Game *game, Node *node) {
     /* 末端ノードを展開する */
+    //printf("    in expand function\n");
 
     // 置ける場所を求める
     int i, j, k;
     char putted_board[BOARD_SIZE+2][BOARD_SIZE+2];
-    char putpos[60][2];
+    char putpos[30][2];
     int pos[2];
     char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
     int length = make_board_to_putlist(node -> board, node -> player, reverse, putpos);
+    //printf("    declaration finished!\n");
 
     if (length == 0) {
+        printf("length == 0\n");
         // ゲーム終了　これより下のノードはない。
         // 勝利しているならボーナスポイントを追加したい
     } else {
@@ -207,8 +145,9 @@ void expand(Game *game, Node *node) {
             }
             pos[0] = putpos[i][0];
             pos[1] = putpos[i][1];
-            put_stone_test(putted_board, pos, reverse, node -> player);
-            node_init(node -> children[i], putted_board, eval(putted_board), opponent(node -> player));
+            put_stone_test(putted_board, reverse, pos, node -> player);
+            node -> children[i] = (Node *)malloc(sizeof(Node));
+            node_init(node -> children[i], node, putted_board, eval(putted_board), opponent(node -> player));
         }
 
         node -> child_num = i;
@@ -251,6 +190,7 @@ void propagation(Game *game, Node *node) {
     for (i = 0; i < node -> child_num;i++) {
         score += node -> children[i] -> score * node -> children[i] -> chance;
     }
+    node -> score = score;
 
     if (node -> parent == NULL) {
         // rootノード
@@ -261,12 +201,12 @@ void propagation(Game *game, Node *node) {
 }
 
 void bot_softmax(Game *game, int pos[]) {
-    const int max_count = 500;
+    const int max_count = 10;
     int count;
     const int origin_stone_num = game -> stone_num;
 
     // 各着手可能位置を調査
-    char putpos[60][2];
+    char putpos[30][2];
     int length = make_putlist(game -> reverse, putpos);
 
     int win_point[length];
@@ -278,29 +218,38 @@ void bot_softmax(Game *game, int pos[]) {
     // rootは今現在の盤面。
     Node root, *target;
 
-    node_init(&root, game -> board, eval(game -> board), opponent(game -> turn));
+    node_init(&root, NULL, game -> board, eval(game -> board), game -> turn);
+    //printf("root -> parent = %p\n", root.parent);
+    //printf("root = %p\n", &root);
 
     for (i = 0;i < max_count;i++) {
+        //printf("check %d\n", i);
         // 子ノードまで掘り下げ
         target = search(&root);
+        //printf("  target searched!\n");
+        //printf("target = %p\n", target);
 
-        char putpos[60][2];
+        char putpos[30][2];
         char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
 
         index = make_board_to_putlist(root.board, root.player, reverse, putpos);
+        //printf("  maked putlist!\n");
 
         if (index == 0) {
             // 勝敗がわかっているノードの末端
+            //printf("  game end?\n");
 
             // 勝ちなら評価点をちょっとあげたい
 
         } else {
             // 勝敗がわかっていないノードの末端
+            //printf("  game continue?\n");
             // ノードを生成
             expand(game, target);
+            //printf("  node expanded!\n");
 
             // スコアを伝搬させていく
-            propagation(game, target -> parent);
+            propagation(game, target);
         }
     }
     // int i;

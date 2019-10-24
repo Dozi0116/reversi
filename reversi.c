@@ -247,7 +247,6 @@ int make_board_to_putlist(char board[BOARD_SIZE+2][BOARD_SIZE+2],
                  char putlist[][2]) {
     /*
     playerとboardからひっくり返せる場所を見つけて返す。
-    返り値は置けるかどうか。TRUEで置ける。
     */
 
    int y, x;
