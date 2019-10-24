@@ -311,3 +311,27 @@ void put_stone_test(char board[BOARD_SIZE+2][BOARD_SIZE+2],
        }
    }
 }
+
+void board_print(char board[BOARD_SIZE+2][BOARD_SIZE+2]) {
+    int i, j;
+    printf("    A B C D E F G H\n");
+    for (i = 1;i < BOARD_SIZE+1;i++) {
+        printf("%d   ", i);
+        for (j = 1;j < BOARD_SIZE+1;j++) {
+            switch (board[i][j]) {
+                case BLACK:
+                    printf("o ");
+                    break;
+                case WHITE:
+                    printf("x ");
+                    break;
+                case EMPTY:
+                    printf(". ");
+                    break;
+                default:
+                    printf("e ");
+            }
+        }
+        printf("\n");
+    }
+}

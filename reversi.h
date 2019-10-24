@@ -44,5 +44,6 @@ extern void put_stone_test(char board[BOARD_SIZE+2][BOARD_SIZE+2],
     char reverse[BOARD_SIZE+2][BOARD_SIZE+2],
     int pos[],
     int player);
+extern void board_print(char board[BOARD_SIZE+2][BOARD_SIZE+2]);
 
 #endif
