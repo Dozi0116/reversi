@@ -128,6 +128,7 @@ void expand(Game *game, Node *node) {
     int pos[2];
     char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
     int length = make_board_to_putlist(node -> board, node -> player, reverse, putpos);
+    double score;
 
     if (length == 0) {
         printf("length == 0\n");
@@ -146,8 +147,14 @@ void expand(Game *game, Node *node) {
             pos[1] = putpos[i][1];
             put_stone_test(putted_board, reverse, pos, node -> player);
             node -> children[i] = (Node *)malloc(sizeof(Node));
-            // 相手の番を考慮できていない→マイナス倍するか何かで考慮しないと
-            node_init(node -> children[i], node, putted_board, eval(putted_board), opponent(node -> player));
+            printf("before eval\n");
+            score = eval(putted_board, game -> turn); // ここで格納されるscoreとreturn scoreの値が違う！？！？
+            printf("score -> %f\n", score);
+            printf("after eval\n");
+            if (node -> player == game -> turn) {
+                score *= -1;
+            }
+            node_init(node -> children[i], node, putted_board, score, opponent(node -> player));
         }
 
         node -> child_num = i;
@@ -187,10 +194,13 @@ void propagation(Game *game, Node *node) {
 
     int i;
     double score = 0;
+    // scoreが正しく計算されていない！！！→return scoreをeval関数内でprintすることで正しく出るようになった…
+    // printf("child_num -> %d\n", node -> child_num);
     for (i = 0; i < node -> child_num;i++) {
         score += node -> children[i] -> score * node -> children[i] -> chance;
     }
-    node -> score = score;
+    node -> score = -score;
+    //printf("score -> %f\n", score);
 
     if (node -> parent == NULL) {
         // rootノード
@@ -201,7 +211,7 @@ void propagation(Game *game, Node *node) {
 }
 
 void bot_softmax(Game *game, int pos[]) {
-    const int max_count = 1500;
+    const int max_count = 10;
     int count;
     const int origin_stone_num = game -> stone_num;
 
@@ -218,7 +228,7 @@ void bot_softmax(Game *game, int pos[]) {
     // rootは今現在の盤面。
     Node root, *target;
 
-    node_init(&root, NULL, game -> board, eval(game -> board), game -> turn);
+    node_init(&root, NULL, game -> board, eval(game -> board, game -> turn), game -> turn);
     //printf("root -> parent = %p\n", root.parent);
     //printf("root = %p\n", &root);
 
@@ -254,6 +264,7 @@ void bot_softmax(Game *game, int pos[]) {
     pos[0] = putpos[0][0];
     pos[1] = putpos[0][1];
     for (i = 0;i < length;i++) {
+        printf("pos(%d, %d) -> score: %f\n", putpos[i][0], putpos[i][1], root.children[i] -> score);
         if (max_score < root.children[i] -> score) {
             max_score = root.children[i] -> score;
             pos[0] = putpos[i][0];

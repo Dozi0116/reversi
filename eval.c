@@ -50,5 +50,7 @@ double eval_static_board(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
 
 
 double eval(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
-    return eval_static_board(board, player);
+    double esb_score = eval_static_board(board, player);
+    printf("return score -> %f\n", esb_score);
+    return esb_score;
 }
