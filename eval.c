@@ -1,6 +1,7 @@
 #include "const.h"
 #include "reversi.h"
 #include <stdio.h>
+#include "eval.h"
 
 /*
     各種評価用の関数一覧。関数名はeval_xxxとする(evalのみ例外)。
@@ -40,6 +41,8 @@ double eval_static_board(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
         for (j = 1;j < BOARD_SIZE+1;j++) {
             if (board[i][j] == player) {
                 score += board_score[i][j];
+            } else if (board[i][j] == opponent(player)) {
+                score -= board_score[i][j];
             }
         }
     }
@@ -51,6 +54,6 @@ double eval_static_board(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
 
 double eval(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     double esb_score = eval_static_board(board, player);
-    printf("return score -> %f\n", esb_score);
+    //printf("return score -> %f\n", esb_score);
     return esb_score;
 }

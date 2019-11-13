@@ -5,6 +5,7 @@
 #include "reversi.h"
 #include "const.h"
 #include "utility.h"
+#include "eval.h"
 
 /*
     各種入力用の関数一覧。関数名はbot_xxxとする(playerのみ例外)。
@@ -147,10 +148,7 @@ void expand(Game *game, Node *node) {
             pos[1] = putpos[i][1];
             put_stone_test(putted_board, reverse, pos, node -> player);
             node -> children[i] = (Node *)malloc(sizeof(Node));
-            printf("before eval\n");
-            score = eval(putted_board, game -> turn); // ここで格納されるscoreとreturn scoreの値が違う！？！？
-            printf("score -> %f\n", score);
-            printf("after eval\n");
+            score = eval(putted_board, game -> turn);
             if (node -> player == game -> turn) {
                 score *= -1;
             }
@@ -194,7 +192,6 @@ void propagation(Game *game, Node *node) {
 
     int i;
     double score = 0;
-    // scoreが正しく計算されていない！！！→return scoreをeval関数内でprintすることで正しく出るようになった…
     // printf("child_num -> %d\n", node -> child_num);
     for (i = 0; i < node -> child_num;i++) {
         score += node -> children[i] -> score * node -> children[i] -> chance;
@@ -211,7 +208,7 @@ void propagation(Game *game, Node *node) {
 }
 
 void bot_softmax(Game *game, int pos[]) {
-    const int max_count = 10;
+    const int max_count = 1000;
     int count;
     const int origin_stone_num = game -> stone_num;
 
