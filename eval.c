@@ -91,25 +91,31 @@ double eval_put_position(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     return my_score - opponent_score;
 }
 
-double eval_open_score(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
+double eval_open_space(char board[BOARD_SIZE+2][BOARD_SIZE+2], int pos[2]) {
     // 開放度
     // 置く場所(置いた場所)がどれだけ石に囲まれているかを見る。
     // 最も開放度が低い手がいい手となるが、
     // 今回は有利であればあるほど大きい値を返すことにしているため、
     // -1をかけて返す。
 
-    int open_score[BOARD_SIZE+2][BOARD_SIZE+2];
+    int score = 0;
 
+    int i;
+    for (i = 0;i < DIRECTION_SIZE;i++) {
+        if (board[pos[0] + DIRECTION[i][0]][pos[1] + DIRECTION[i][1]] == EMPTY) score++;
+    }
 
+    return score;
 }
 
 double eval(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player,
             int pos[2], char putted_board[BOARD_SIZE+2][BOARD_SIZE+2]) {
+
     // 静的盤面評価
     double sb_score = eval_static_board(putted_board, player) * SB_WEIGHT;
     // 着手可能手数
     double pp_score = eval_put_position(board, player) * PP_WEIGHT;
     // 開放度
-    double os_score = eval_open_space(board, player) * OS_WEIGHT;
+    double os_score = eval_open_space(board, pos) * OS_WEIGHT;
     return sb_score + pp_score + os_score;
 }
