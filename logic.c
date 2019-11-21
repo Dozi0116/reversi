@@ -73,6 +73,7 @@ struct Node *roulette(Node *nodes[],
     for (i = 0;i < length;i++) {
         probability += nodes[i] -> chance;
         if (probability >= chance) {
+            // printf("-> select %d!\n", i);
             return nodes[i];
         }
     }
@@ -85,10 +86,15 @@ struct Node *search(Node *node) {
     *  これ以上打つべき点が無い→末端ノード
     */
 
-    //printf("SEARCH...\n");
     if (node -> children[0] == NULL) {
        // 子ノードがいない
+       // printf("  found leaf node!\n");
        return node; 
+    }
+
+    int i = 0;
+    for (i = 0;i < node -> child_num;i++) {
+        // printf("child[%d](%lf) -> %lf, ", i, node -> children[i] -> score, node -> children[i] -> chance);
     }
 
     return search(roulette(node -> children, node -> child_num));
@@ -134,7 +140,10 @@ void expand(Game *game, Node *node) {
     if (length == 0) {
         printf("length == 0\n");
         // パスの可能性がある。ゲーム終了ではない可能性
-        // TODO
+        // 同じ盤面で相手が置けるか見る
+        // 置けるならパス→盤面を変えない状態でノードを作成、スコアを伝搬させる。
+        // 置けないならゲーム終了→
+        
     } else {
         for (i = 0;i < length;i++) {
             // boardをコピー
@@ -148,10 +157,7 @@ void expand(Game *game, Node *node) {
             pos[1] = putpos[i][1];
             put_stone_test(putted_board, reverse, pos, node -> player);
             node -> children[i] = (Node *)malloc(sizeof(Node));
-            score = eval(putted_board, game -> turn);
-            if (node -> player == game -> turn) {
-                score *= -1;
-            }
+            score = eval(node -> board, node -> player, pos, putted_board);
             node_init(node -> children[i], node, putted_board, score, opponent(node -> player));
         }
 
@@ -160,23 +166,24 @@ void expand(Game *game, Node *node) {
 }
 
 void chance_update(Node *nodes[], int node_num) {
-    /* ソフトマックス関数
-     *                exp(x_i)
+    /* 温度付きソフトマックス関数
+     *                exp(x_i / T)
      *  y_i = -------------------------
-     *        sigma_{k=1}^{n}{exp(x_k)}
+     *        sigma_{k=1}^{n}{exp(x_k / T)}
     */
     
 
     double sum_exp = 0;
+    const int T = 1; // ソフトマックス関数の温度。
 
     int i;
     for (i = 0; i < node_num;i++) {
-        sum_exp += exp(nodes[i] -> score);
+        sum_exp += exp(nodes[i] -> score / T);
     }
 
     // ソフトマックス法を使って確率を算出
     for (i = 0;i < node_num;i++) {
-        nodes[i] -> chance = exp(nodes[i] -> score) / sum_exp;
+        nodes[i] -> chance = exp(nodes[i] -> score / T) / sum_exp;
     }
 
 }
@@ -185,6 +192,7 @@ void propagation(Game *game, Node *node) {
 
     /* 評価値を伝搬させる
      * 評価値 = sum(子ノードの評価点 * ルーレット選択の確率)
+     * つまり、子ノードの期待値が親ノードの評価値になる。
     */
 
     // 伝搬の前に選択確率を更新
@@ -192,12 +200,11 @@ void propagation(Game *game, Node *node) {
 
     int i;
     double score = 0;
-    // printf("child_num -> %d\n", node -> child_num);
     for (i = 0; i < node -> child_num;i++) {
         score += node -> children[i] -> score * node -> children[i] -> chance;
     }
+    // printf("score update! %lf -> %lf\n", node -> score, -score);
     node -> score = -score;
-    //printf("score -> %f\n", score);
 
     if (node -> parent == NULL) {
         // rootノード
@@ -210,53 +217,28 @@ void propagation(Game *game, Node *node) {
 void bot_softmax(Game *game, int pos[]) {
     const int max_count = 1000;
     int count;
-    const int origin_stone_num = game -> stone_num;
 
     // 各着手可能位置を調査
     char putpos[30][2];
     int length = make_putlist(game -> reverse, putpos);
 
-    int win_point[length];
-
-    // プレイアウトをmax_count回行う
     int i, j;
     int index;
     // rootノードを生成しておく
     // rootは今現在の盤面。
     Node root, *target;
 
-    node_init(&root, NULL, game -> board, eval(game -> board, game -> turn), game -> turn);
-    //printf("root -> parent = %p\n", root.parent);
-    //printf("root = %p\n", &root);
+    node_init(&root, NULL, game -> board, 0, game -> turn);
 
     for (i = 0;i < max_count;i++) {
-        // printf("check %d\n", i);
-        // 子ノードまで掘り下げ
+        // 葉ノードまで掘り下げ
         target = search(&root);
 
-        char putpos[30][2];
-        char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
-
-        index = make_board_to_putlist(root.board, root.player, reverse, putpos);
-        // パスすることを何も考慮できていない…
-
-        if (index == 0) {
-            // 勝敗がわかっているノードの末端？
-
-            // ここかexpandでパスについての処理を書いてあげる TODO
-
-            // 勝ちなら評価点をちょっとあげたい
-
-        } else {
-            // 勝敗がわかっていないノードの末端
-            // ノードを生成
-            expand(game, target);
-
-            // スコアを伝搬させていく
-            propagation(game, target);
-        }
+        expand(game, target);
+        propagation(game, target);
     }
 
+    // 最終的に評価値が最大になったrootの子ノードを選択
     double max_score = root.children[0] -> score;
     pos[0] = putpos[0][0];
     pos[1] = putpos[0][1];
