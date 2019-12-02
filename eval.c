@@ -3,9 +3,14 @@
 #include <stdio.h>
 #include "eval.h"
 
+// 評価値の重み
 #define SB_WEIGHT 1
 #define PP_WEIGHT 1
 #define OS_WEIGHT 1
+#define SS_WEIGHT 1
+
+// 通常定数
+#define ANY 10
 
 /*
     各種評価用の関数一覧。関数名はeval_xxxとする(evalのみ例外)。
@@ -108,6 +113,127 @@ double eval_open_space(char board[BOARD_SIZE+2][BOARD_SIZE+2], int pos[2]) {
     return score;
 }
 
+double eval_side_shape(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
+    // 辺の評価
+
+    // 確定石
+    // 角から自分の石が連続すれば、それは確定石
+    // 自分の石を置いたことで相手の確定石を増やすことはない→相手は考慮しない
+    int fixed_stone = 0;
+    int tmp;
+    int is_chain;
+
+    // 辺の形
+    // 一般に、山と呼ばれる形は良型で、ウイングと呼ばれる形は悪型と言われる。
+    const char mountain[BOARD_SIZE+2] = {EMPTY, EMPTY, player, player, player, player, player, player, EMPTY, EMPTY};
+    const char wing[BOARD_SIZE+2] = {EMPTY, EMPTY, player, player, player, player, player, ANY, EMPTY, EMPTY};
+    int is_wing[2] = {FALSE, FALSE};
+    int wing_score = 0, mountain_score = 0;
+
+    int x = 0, y = 0;
+    // 上辺左→右
+    for (x = 1, is_chain = is_wing[0] = TRUE, tmp = 0;x < BOARD_SIZE+1;x++) {
+        if (board[1][x] == player && is_chain == TRUE) tmp++;
+        else is_chain = FALSE;
+        if (board[1][x] != wing[x] && wing[x] != ANY) is_wing[0] = FALSE;
+    }
+    // 上辺右→左
+    for (x--, is_chain = is_wing[1] = TRUE;x >= 1;x--) {
+        if (board[1][x] == player && is_chain == TRUE) tmp++;
+        else is_chain = FALSE;
+        if (board[1][x] != wing[BOARD_SIZE+2 - x] && wing[BOARD_SIZE+2 - x] != ANY) is_wing[1] = FALSE;
+    }
+    if (is_wing[0] && is_wing[1]) {
+        // どっちから見てもウイング→山の形
+        mountain_score++;
+    } else {
+        if (is_wing[0]) wing_score++;
+        if (is_wing[1]) wing_score++;
+    }
+    if (tmp > BOARD_SIZE) {
+        // 重複して数えた、つまり、辺全てが自分の色
+        tmp = BOARD_SIZE;
+    }
+    fixed_stone += tmp;
+
+    // 左辺上→下
+    for (y = 1, is_chain = is_wing[0] = TRUE, tmp = 0;y < BOARD_SIZE+1;y++) {
+        if (board[y][1] == player && is_chain == TRUE) tmp++;
+        else is_chain = FALSE;
+        if (board[y][1] != wing[y] && wing[y] != ANY) is_wing[0] = FALSE;
+    }
+    // 左辺下→上
+    for (y--, is_chain = is_wing[1] = TRUE;y >= 1;y--) {
+        if (board[y][1] == player && is_chain == TRUE) tmp++;
+        else is_chain = FALSE;
+        if (board[y][1] != wing[BOARD_SIZE+2 - y] && wing[BOARD_SIZE+2 - y] != ANY) is_wing[1] = FALSE;
+    }
+    if (is_wing[0] && is_wing[1]) {
+        // どっちから見てもウイング→山の形
+        mountain_score++;
+    } else {
+        if (is_wing[0]) wing_score++;
+        if (is_wing[1]) wing_score++;
+    }
+    if (tmp > BOARD_SIZE) {
+        // 重複して数えた、つまり、辺全てが自分の色
+        tmp = BOARD_SIZE;
+    }
+    fixed_stone += tmp;
+
+    // 右辺上→下
+    for (y = 1, is_chain = is_wing[0] = TRUE, tmp = 0;y < BOARD_SIZE+1;y++) {
+        if (board[BOARD_SIZE][y] == player && is_chain == TRUE) tmp++;
+        else is_chain = FALSE;
+        if (board[BOARD_SIZE][y] != wing[y] && wing[y] != ANY) is_wing[0] = FALSE;
+    }
+    // 右辺下→上
+    for (x--, is_chain = is_wing[1] = TRUE;y >= 1;y--) {
+        if (board[BOARD_SIZE][y] == player && is_chain == TRUE) tmp++;
+        else is_chain = FALSE;
+        if (board[BOARD_SIZE][y] != wing[BOARD_SIZE+2 - y] && wing[BOARD_SIZE+2 - y] != ANY) is_wing[1] = FALSE;
+    }
+    if (is_wing[0] && is_wing[1]) {
+        // どっちから見てもウイング→山の形
+        mountain_score++;
+    } else {
+        if (is_wing[0]) wing_score++;
+        if (is_wing[1]) wing_score++;
+    }
+    if (tmp > BOARD_SIZE) {
+        // 重複して数えた、つまり、辺全てが自分の色
+        tmp = BOARD_SIZE;
+    }
+    fixed_stone += tmp;
+
+    // 下辺左→右
+    for (x = 1, is_chain = is_wing[0] = TRUE, tmp = 0;x < BOARD_SIZE+1;x++) {
+        if (board[BOARD_SIZE][x] == player && is_chain == TRUE) tmp++;
+        else is_chain = FALSE;
+        if (board[BOARD_SIZE][x] != wing[x] && wing[x] != ANY) is_wing[0] = FALSE;
+    }
+    // 下辺右→左
+    for (x--, is_chain = is_wing[1] = TRUE;x >= 1;x--) {
+        if (board[BOARD_SIZE][x] == player && is_chain == TRUE) tmp++;
+        else is_chain = FALSE;
+        if (board[BOARD_SIZE][x] != wing[BOARD_SIZE+2 - x] && wing[BOARD_SIZE+2 - x] != ANY) is_wing[1] = FALSE;
+    }
+    if (is_wing[0] && is_wing[1]) {
+        // どっちから見てもウイング→山の形
+        mountain_score++;
+    } else {
+        if (is_wing[0]) wing_score++;
+        if (is_wing[1]) wing_score++;
+    }
+    if (tmp > BOARD_SIZE) {
+        // 重複して数えた、つまり、辺全てが自分の色
+        tmp = BOARD_SIZE;
+    }
+    fixed_stone += tmp;
+
+    return fixed_stone + mountain_score - wing_score;
+}
+
 double eval(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player,
             int pos[2], char putted_board[BOARD_SIZE+2][BOARD_SIZE+2]) {
 
@@ -117,5 +243,8 @@ double eval(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player,
     double pp_score = eval_put_position(board, player) * PP_WEIGHT;
     // 開放度
     double os_score = eval_open_space(board, pos) * OS_WEIGHT;
-    return sb_score + pp_score + os_score;
+    // 辺の評価
+    double fs_score = eval_side_shape(putted_board, player) * SS_WEIGHT;
+
+    return sb_score + pp_score + os_score + fs_score;
 }
