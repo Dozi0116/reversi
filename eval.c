@@ -4,13 +4,24 @@
 #include "eval.h"
 
 // 評価値の重み
-#define SB_WEIGHT 1
-#define PP_WEIGHT 1
-#define OS_WEIGHT 1
-#define SS_WEIGHT 1
+#define SB_INDEX 0
+#define PP_INDEX 1
+#define OS_INDEX 2
+#define FS_INDEX 3
+#define MT_INDEX 4
+#define WI_INDEX 5
 
 // 通常定数
 #define ANY 10
+
+double weights[] = {
+    1, // 静的盤面評価
+    20, // 着手可能手数
+    5, // 開放度
+    150, // 確定石
+    40, // 山
+    80, // ウィング
+};
 
 /*
     各種評価用の関数一覧。関数名はeval_xxxとする(evalのみ例外)。
@@ -115,6 +126,7 @@ double eval_open_space(char board[BOARD_SIZE+2][BOARD_SIZE+2], int pos[2]) {
 
 double eval_side_shape(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     // 辺の評価
+    // 確定石の個数と辺の評価(ウィング・山)を判定する
 
     // 確定石
     // 角から自分の石が連続すれば、それは確定石
@@ -129,6 +141,7 @@ double eval_side_shape(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     const char wing[BOARD_SIZE+2] = {EMPTY, EMPTY, player, player, player, player, player, ANY, EMPTY, EMPTY};
     int is_wing[2] = {FALSE, FALSE};
     int wing_score = 0, mountain_score = 0;
+    int wing_multiple = 5, mountain_multiple = 5;
 
     int x = 0, y = 0;
     // 上辺左→右
@@ -231,20 +244,20 @@ double eval_side_shape(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     }
     fixed_stone += tmp;
 
-    return fixed_stone + mountain_score - wing_score;
+    return fixed_stone * weights[FS_INDEX] + mountain_score * weights[MT_INDEX] - wing_score * weights[WI_INDEX];
 }
 
 double eval(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player,
             int pos[2], char putted_board[BOARD_SIZE+2][BOARD_SIZE+2]) {
 
     // 静的盤面評価
-    double sb_score = eval_static_board(putted_board, player) * SB_WEIGHT;
+    double sb_score = eval_static_board(putted_board, player) * weights[SB_INDEX];
     // 着手可能手数
-    double pp_score = eval_put_position(board, player) * PP_WEIGHT;
+    double pp_score = eval_put_position(board, player) * weights[PP_INDEX];
     // 開放度
-    double os_score = eval_open_space(board, pos) * OS_WEIGHT;
+    double os_score = eval_open_space(board, pos) * weights[OS_INDEX];
     // 辺の評価
-    double fs_score = eval_side_shape(putted_board, player) * SS_WEIGHT;
+    double fs_score = eval_side_shape(putted_board, player);
 
     return sb_score + pp_score + os_score + fs_score;
 }
