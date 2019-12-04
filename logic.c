@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "logic.h"
 #include "reversi.h"
@@ -73,7 +74,6 @@ struct Node *roulette(Node *nodes[],
     for (i = 0;i < length;i++) {
         probability += nodes[i] -> chance;
         if (probability >= chance) {
-            // printf("-> select %d!\n", i);
             return nodes[i];
         }
     }
@@ -86,15 +86,11 @@ struct Node *search(Node *node) {
     *  これ以上打つべき点が無い→末端ノード
     */
 
+
     if (node -> children[0] == NULL) {
        // 子ノードがいない
        // printf("  found leaf node!\n");
        return node; 
-    }
-
-    int i = 0;
-    for (i = 0;i < node -> child_num;i++) {
-        // printf("child[%d](%lf) -> %lf, ", i, node -> children[i] -> score, node -> children[i] -> chance);
     }
 
     return search(roulette(node -> children, node -> child_num));
@@ -105,6 +101,7 @@ void node_init(Node *node,
     char board[BOARD_SIZE+2][BOARD_SIZE+2],
     double score,
     int player) {
+
     node -> parent = parent;
     
     int i, j;
@@ -138,13 +135,23 @@ void expand(Game *game, Node *node) {
     double score;
 
     if (length == 0) {
-        printf("length == 0\n");
         // パスの可能性がある。ゲーム終了ではない可能性
         // 同じ盤面で相手が置けるか見る
-        // 置けるならパス→盤面を変えない状態でノードを作成、スコアを伝搬させる。
-        // 置けないならゲーム終了→
-        
+        length = make_board_to_putlist(node -> board, opponent(node -> player), reverse, putpos);
+        if (length == 0) {
+            // 決着ノード
+            // printf("game end!\n");
+        } else {
+            // パスノード
+            printf("pass node!\n");
+            // 盤面を変えない状態でノードを作成。
+            node -> children[0] = (Node *)malloc(sizeof(Node));
+            node_init(node -> children[0], node, node -> board, -(node -> score), opponent(node -> player));
+            node -> child_num = 1;
+        }
+ 
     } else {
+        // 通常ノード
         for (i = 0;i < length;i++) {
             // boardをコピー
             for (j = 0;j < BOARD_SIZE+2;j++) {
@@ -170,11 +177,14 @@ void chance_update(Node *nodes[], int node_num) {
      *                exp(x_i / T)
      *  y_i = -------------------------
      *        sigma_{k=1}^{n}{exp(x_k / T)}
+     * 
+     * 注意: exp(730)あたりを超えると、計算できなくなってしまうので注意！！
+     * 対策: 温度を用いて730以下にする(今これ)、上限を設ける、730を超えないような評価関数を作成するetc...
     */
     
 
     double sum_exp = 0;
-    const int T = 1; // ソフトマックス関数の温度。
+    const int T = 20; // ソフトマックス関数の温度。
 
     int i;
     for (i = 0; i < node_num;i++) {
@@ -203,7 +213,6 @@ void propagation(Game *game, Node *node) {
     for (i = 0; i < node -> child_num;i++) {
         score += node -> children[i] -> score * node -> children[i] -> chance;
     }
-    // printf("score update! %lf -> %lf\n", node -> score, -score);
     node -> score = -score;
 
     if (node -> parent == NULL) {
@@ -212,6 +221,21 @@ void propagation(Game *game, Node *node) {
     }
 
     propagation(game, node -> parent);
+}
+
+void all_free(Node *node) {
+    if (node -> child_num == 0) {
+        free(node);
+        return;
+    }
+    int i;
+    for (i = 0;i < node -> child_num;i++){
+        all_free(node -> children[i]);
+    }
+
+    // printf("    %p\n", node);
+    free(node);
+    return;
 }
 
 void bot_softmax(Game *game, int pos[]) {
@@ -226,28 +250,33 @@ void bot_softmax(Game *game, int pos[]) {
     int index;
     // rootノードを生成しておく
     // rootは今現在の盤面。
-    Node root, *target;
+    Node *root, *target;
 
-    node_init(&root, NULL, game -> board, 0, game -> turn);
+    root  = (Node *)malloc(sizeof(Node));
+
+
+    node_init(root, NULL, game -> board, 0, game -> turn);
 
     for (i = 0;i < max_count;i++) {
         // 葉ノードまで掘り下げ
-        target = search(&root);
-
+        target = search(root);
         expand(game, target);
         propagation(game, target);
     }
 
     // 最終的に評価値が最大になったrootの子ノードを選択
-    double max_score = root.children[0] -> score;
+    double max_score = root -> children[0] -> score;
     pos[0] = putpos[0][0];
     pos[1] = putpos[0][1];
     for (i = 0;i < length;i++) {
-        printf("pos(%d, %d) -> score: %f\n", putpos[i][0], putpos[i][1], root.children[i] -> score);
-        if (max_score < root.children[i] -> score) {
-            max_score = root.children[i] -> score;
+        printf("pos(%d, %d) -> score: %f\n", putpos[i][0], putpos[i][1], root -> children[i] -> score);
+        if (max_score < root -> children[i] -> score) {
+            max_score = root -> children[i] -> score;
             pos[0] = putpos[i][0];
             pos[1] = putpos[i][1];
         }
     }
+
+    // nodeを開放する
+    all_free(root);
 }
