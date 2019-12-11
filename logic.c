@@ -6,7 +6,8 @@
 #include "reversi.h"
 #include "const.h"
 #include "utility.h"
-#include "eval.h"
+// #include "eval.h"
+#include "book_evaluation.h"
 
 /*
     各種入力用の関数一覧。関数名はbot_xxxとする(playerのみ例外)。
@@ -154,19 +155,30 @@ void expand(Game *game, Node *node) {
         // 通常ノード
         for (i = 0;i < length;i++) {
             // boardをコピー
+            // printf("huga1\n");
             for (j = 0;j < BOARD_SIZE+2;j++) {
                 for (k = 0;k < BOARD_SIZE+2;k++) {
                     putted_board[j][k] = node -> board[j][k];
                 }
             }
+            // printf("huga2\n");
 
             pos[0] = putpos[i][0];
             pos[1] = putpos[i][1];
             put_stone_test(putted_board, reverse, pos, node -> player);
+            printf("huga3\n");
             node -> children[i] = (Node *)malloc(sizeof(Node));
-            score = eval(node -> board, node -> player, pos, putted_board);
+            if (node -> children[i] == NULL) {
+                // printf("yeah\n");
+                exit(0);
+            }
+            printf("huga4\n");
+            score = evaluation(node -> board, node -> player);
             node_init(node -> children[i], node, putted_board, score, opponent(node -> player));
+            // printf("huga5\n");
         }
+
+        printf("end expand\n");
 
         node -> child_num = i;
     }
@@ -184,10 +196,15 @@ void chance_update(Node *nodes[], int node_num) {
     
 
     double sum_exp = 0;
-    const int T = 20; // ソフトマックス関数の温度。
+    const int T = 100; // ソフトマックス関数の温度。
 
     int i;
     for (i = 0; i < node_num;i++) {
+        if (nodes[i] -> score / T > 700) {
+            printf("over 700!!!!\n");
+
+        }
+
         sum_exp += exp(nodes[i] -> score / T);
     }
 
@@ -259,9 +276,13 @@ void bot_softmax(Game *game, int pos[]) {
 
     for (i = 0;i < max_count;i++) {
         // 葉ノードまで掘り下げ
+        // printf("hoge1\n");
         target = search(root);
+        // printf("hoge2\n");
         expand(game, target);
+        // printf("hoge3\n");
         propagation(game, target);
+        // printf("hoge4\n");
     }
 
     // 最終的に評価値が最大になったrootの子ノードを選択

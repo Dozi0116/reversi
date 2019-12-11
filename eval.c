@@ -14,11 +14,20 @@
 // 通常定数
 #define ANY 10
 
-double weights[] = {
+double weights_origin[] = {
     1, // 静的盤面評価
     20, // 着手可能手数
     5, // 開放度
     150, // 確定石
+    40, // 山
+    80, // ウィング
+};
+
+double weights[] = {
+    1, // 静的盤面評価
+    20, // 着手可能手数
+    5, // 開放度
+    80, // 確定石
     40, // 山
     80, // ウィング
 };
@@ -258,6 +267,9 @@ double eval(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player,
     double os_score = eval_open_space(board, pos) * weights[OS_INDEX];
     // 辺の評価
     double fs_score = eval_side_shape(putted_board, player);
+
+    // debug output
+    printf("evalscore\n\tsb -> %lf\n\tpp -> %lf\n\tos -> %lf\n\tfs -> %lf\n", sb_score, pp_score, os_score, fs_score);
 
     return sb_score + pp_score + os_score + fs_score;
 }
