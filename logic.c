@@ -34,7 +34,7 @@ void propagation(Game *game, Node *node); // OK
 
 
 /*
-    人間がキーボードから入力を行う用のロジック
+人間がキーボードから入力を行う用のロジック
 */
 void player(Game *game, int pos[]) {
     char command[3];
@@ -53,6 +53,10 @@ void player(Game *game, int pos[]) {
     }
 }
 
+
+/*
+とりあえず適当に打つロジック
+*/
 void bot_random(Game *game, int pos[]) {
     char putpos[30][2];
     int index = 0;
@@ -65,9 +69,12 @@ void bot_random(Game *game, int pos[]) {
 }
 
 
-struct Node *roulette(Node *nodes[],
+/*
+確率に基づいて1つ選出する
+*/
+struct Node *roulette(
+    Node *nodes[],
     int length) {
-    /* 確率に基づいて1つ選出する */
 
     int i;
     double chance = (double)rand() / RAND_MAX;
@@ -81,22 +88,25 @@ struct Node *roulette(Node *nodes[],
 
 }
 
+
+/*
+末端ノードor新規子ノードに来るまで掘り下げる
+これ以上打つべき点が無い→末端ノード
+*/
 struct Node *search(Node *node) {
-    /*
-    *  末端ノードor新規子ノードに来るまで掘り下げる
-    *  これ以上打つべき点が無い→末端ノード
-    */
+
 
 
     if (node -> children[0] == NULL) {
-       // 子ノードがいない
-       // printf("  found leaf node!\n");
        return node; 
     }
 
     return search(roulette(node -> children, node -> child_num));
 }
 
+/*
+ノードの初期化を行う関数。
+*/
 void node_init(Node *node,
     Node *parent,
     char board[BOARD_SIZE+2][BOARD_SIZE+2],
@@ -117,15 +127,15 @@ void node_init(Node *node,
     }
 
     node -> child_num = 0;
-
     node -> score = score;
-
     node -> player = player;
 }
 
-void expand(Game *game, Node *node) {
-    /* 末端ノードを展開する */
 
+/*
+末端ノードを展開する関数。
+*/
+void expand(Game *game, Node *node) {
     // 置ける場所を求める
     int i, j, k;
     char putted_board[BOARD_SIZE+2][BOARD_SIZE+2];
@@ -144,65 +154,58 @@ void expand(Game *game, Node *node) {
             // printf("game end!\n");
         } else {
             // パスノード
-            printf("pass node!\n");
+            // printf("pass node!\n");
             // 盤面を変えない状態でノードを作成。
             node -> children[0] = (Node *)malloc(sizeof(Node));
             node_init(node -> children[0], node, node -> board, -(node -> score), opponent(node -> player));
             node -> child_num = 1;
         }
- 
     } else {
         // 通常ノード
         for (i = 0;i < length;i++) {
             // boardをコピー
-            // printf("huga1\n");
             for (j = 0;j < BOARD_SIZE+2;j++) {
                 for (k = 0;k < BOARD_SIZE+2;k++) {
                     putted_board[j][k] = node -> board[j][k];
                 }
             }
-            // printf("huga2\n");
 
             pos[0] = putpos[i][0];
             pos[1] = putpos[i][1];
             put_stone_test(putted_board, reverse, pos, node -> player);
-            printf("huga3\n");
             node -> children[i] = (Node *)malloc(sizeof(Node));
             if (node -> children[i] == NULL) {
-                // printf("yeah\n");
                 exit(0);
             }
-            printf("huga4\n");
             score = evaluation(node -> board, node -> player);
             node_init(node -> children[i], node, putted_board, score, opponent(node -> player));
-            // printf("huga5\n");
         }
 
-        printf("end expand\n");
+        // printf("end expand\n");
 
         node -> child_num = i;
     }
 }
 
-void chance_update(Node *nodes[], int node_num) {
-    /* 温度付きソフトマックス関数
-     *                exp(x_i / T)
-     *  y_i = -------------------------
-     *        sigma_{k=1}^{n}{exp(x_k / T)}
-     * 
-     * 注意: exp(730)あたりを超えると、計算できなくなってしまうので注意！！
-     * 対策: 温度を用いて730以下にする(今これ)、上限を設ける、730を超えないような評価関数を作成するetc...
-    */
-    
 
+/*
+温度付きソフトマックス関数
+               exp(x_i / T)
+y_i = -------------------------
+      sigma_{k=1}^{n}{exp(x_k / T)}
+
+注意: exp(730)あたりを超えると、計算できなくなってしまうので注意！！
+対策: 温度を用いて730以下にする(今これ)、上限を設ける、730を超えないような評価関数を作成するetc...
+*/
+void chance_update(Node *nodes[], int node_num) {
     double sum_exp = 0;
-    const int T = 100; // ソフトマックス関数の温度。
+    const int T = 50; // ソフトマックス関数の温度。
 
     int i;
     for (i = 0; i < node_num;i++) {
         if (nodes[i] -> score / T > 700) {
             printf("over 700!!!!\n");
-
+            nodes[i] -> score = 700;
         }
 
         sum_exp += exp(nodes[i] -> score / T);
@@ -215,13 +218,13 @@ void chance_update(Node *nodes[], int node_num) {
 
 }
 
+
+/*
+評価値を伝搬させる
+評価値 = sum(子ノードの評価点 * ルーレット選択の確率)
+つまり、子ノードの期待値が親ノードの評価値になる。
+*/
 void propagation(Game *game, Node *node) {
-
-    /* 評価値を伝搬させる
-     * 評価値 = sum(子ノードの評価点 * ルーレット選択の確率)
-     * つまり、子ノードの期待値が親ノードの評価値になる。
-    */
-
     // 伝搬の前に選択確率を更新
     chance_update(node -> children, node -> child_num);
 
@@ -240,6 +243,11 @@ void propagation(Game *game, Node *node) {
     propagation(game, node -> parent);
 }
 
+
+/*
+探索に使用したノードを開放する関数。
+rootノードを渡すと、再帰的に開放していく。
+*/
 void all_free(Node *node) {
     if (node -> child_num == 0) {
         free(node);
@@ -250,13 +258,17 @@ void all_free(Node *node) {
         all_free(node -> children[i]);
     }
 
-    // printf("    %p\n", node);
     free(node);
     return;
 }
 
+
+/*
+ソフトマックス探索を行う関数。
+int pos[]の中に次に打つべき手を格納する。
+*/
 void bot_softmax(Game *game, int pos[]) {
-    const int max_count = 1000;
+    const int max_count = 1500;
     int count;
 
     // 各着手可能位置を調査
@@ -271,18 +283,13 @@ void bot_softmax(Game *game, int pos[]) {
 
     root  = (Node *)malloc(sizeof(Node));
 
-
     node_init(root, NULL, game -> board, 0, game -> turn);
 
     for (i = 0;i < max_count;i++) {
         // 葉ノードまで掘り下げ
-        // printf("hoge1\n");
         target = search(root);
-        // printf("hoge2\n");
         expand(game, target);
-        // printf("hoge3\n");
         propagation(game, target);
-        // printf("hoge4\n");
     }
 
     // 最終的に評価値が最大になったrootの子ノードを選択
@@ -290,7 +297,7 @@ void bot_softmax(Game *game, int pos[]) {
     pos[0] = putpos[0][0];
     pos[1] = putpos[0][1];
     for (i = 0;i < length;i++) {
-        printf("pos(%d, %d) -> score: %f\n", putpos[i][0], putpos[i][1], root -> children[i] -> score);
+        // printf("pos(%d, %d) -> score: %f\n", putpos[i][0], putpos[i][1], root -> children[i] -> score);
         if (max_score < root -> children[i] -> score) {
             max_score = root -> children[i] -> score;
             pos[0] = putpos[i][0];
