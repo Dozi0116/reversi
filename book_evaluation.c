@@ -245,8 +245,8 @@ void eval_open(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player, score_t *scor
     score -> open_num = 0;
 
     int x, y, open_score, i;
-    for (y = 1;x < BOARD_SIZE+1;x++) {
-        for (x = 1;x < BOARD_SIZE+1;y++) {
+    for (y = 1;y < BOARD_SIZE+1;y++) {
+        for (x = 1;x < BOARD_SIZE+1;x++) {
             if (board[y][x] != player) continue;
 
             // 周りの石を見る
@@ -274,7 +274,6 @@ int eval_putpos(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player, score_t *sco
     char dummy1[BOARD_SIZE+2][BOARD_SIZE+2];
     char dummy2[30][2];
     score -> putpos_num = make_board_to_putlist(board, player, dummy1, dummy2);
-    printf("score: %d\n", score -> putpos_num);
 }
 
 
@@ -305,22 +304,20 @@ int evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
         my_score.c_num * weights_s.c_weight + \
         my_score.x_num * weights_s.x_weight);
 
-    printf("%d, %d, %d, %d, %d, %d, %d, %d\n", \
-        my_score.fixed_stone_num * weights_s.fixed_stone_weight,
-        my_score.corner_stone_num * weights_s.corner_stone_weight,
-        my_score.open_num * weights_s.open_weight,
-        my_score.putpos_num * weights_s.putpos_weight,
-        my_score.mountain_num * weights_s.mountain_weight,
-        my_score.wing_num * weights_s.wing_weight,
-        my_score.c_num * weights_s.c_weight,
-        my_score.x_num * weights_s.x_weight);
+    // printf("%d, %d, %d, %d, %d, %d, %d, %d\n", \
+    //     my_score.fixed_stone_num * weights_s.fixed_stone_weight,
+    //     my_score.corner_stone_num * weights_s.corner_stone_weight,
+    //     my_score.open_num * weights_s.open_weight,
+    //     my_score.putpos_num * weights_s.putpos_weight,
+    //     my_score.mountain_num * weights_s.mountain_weight,
+    //     my_score.wing_num * weights_s.wing_weight,
+    //     my_score.c_num * weights_s.c_weight,
+    //     my_score.x_num * weights_s.x_weight);
 
 
     eval_edge(board, opponent(player), &opponent_score);
     eval_corner(board, opponent(player), &opponent_score);
     eval_open(board, opponent(player), &opponent_score);
-
-    // 実行するたびに止まる場所が変わる
 
     result -= ( \
         opponent_score.fixed_stone_num * weights_s.fixed_stone_weight + \
@@ -332,17 +329,17 @@ int evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
         opponent_score.c_num * weights_s.c_weight + \
         opponent_score.x_num * weights_s.x_weight);
 
-    printf("%d, %d, %d, %d, %d, %d, %d, %d\n", \
-        opponent_score.fixed_stone_num * weights_s.fixed_stone_weight,
-        opponent_score.corner_stone_num * weights_s.corner_stone_weight,
-        opponent_score.open_num * weights_s.open_weight,
-        opponent_score.putpos_num * weights_s.putpos_weight,
-        opponent_score.mountain_num * weights_s.mountain_weight,
-        opponent_score.wing_num * weights_s.wing_weight,
-        opponent_score.c_num * weights_s.c_weight,
-        opponent_score.x_num * weights_s.x_weight);
+    // printf("%d, %d, %d, %d, %d, %d, %d, %d\n", \
+    //     opponent_score.fixed_stone_num * weights_s.fixed_stone_weight,
+    //     opponent_score.corner_stone_num * weights_s.corner_stone_weight,
+    //     opponent_score.open_num * weights_s.open_weight,
+    //     opponent_score.putpos_num * weights_s.putpos_weight,
+    //     opponent_score.mountain_num * weights_s.mountain_weight,
+    //     opponent_score.wing_num * weights_s.wing_weight,
+    //     opponent_score.c_num * weights_s.c_weight,
+    //     opponent_score.x_num * weights_s.x_weight);
 
-    printf("eval score -> %d\n", result);
+    // printf("eval score -> %d\n", result);
 
     return result;
 }
