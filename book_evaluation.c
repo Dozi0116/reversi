@@ -99,9 +99,10 @@ void eval_edge(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player, score_t *scor
     }
 
     // ウイングになっていないかつCが自分の色→C打ち
+    // 山でもウイングでもない かつ 角に置かれていない かつ Cが自分の色→
     if (!is_wing[0] && !is_wing[1]) {
-        if (board[1][2] == player) c_score++;
-        if (board[1][BOARD_SIZE-1] == player) c_score++;
+        if (board[1][1] == EMPTY && board[1][2] == player) c_score++;
+        if (board[1][BOARD_SIZE] == EMPTY && board[1][BOARD_SIZE-1] == player) c_score++;
     }
 
     // 重複して数えた→辺全てが自分の色
@@ -132,8 +133,8 @@ void eval_edge(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player, score_t *scor
     }
 
     if (!is_wing[0] && !is_wing[1]) {
-        if (board[2][1] == player) c_score++;
-        if (board[BOARD_SIZE-1][1] == player) c_score++;
+        if (board[1][1] == EMPTY && board[2][1] == player) c_score++;
+        if (board[BOARD_SIZE][1] == EMPTY && board[BOARD_SIZE-1][1] == player) c_score++;
     }
 
     if (tmp > BOARD_SIZE) tmp = BOARD_SIZE;
@@ -163,8 +164,8 @@ void eval_edge(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player, score_t *scor
     }
 
     if (!is_wing[0] && !is_wing[1]) {
-        if (board[BOARD_SIZE][2] == player) c_score++;
-        if (board[BOARD_SIZE][BOARD_SIZE-1] == player) c_score++;
+        if (board[BOARD_SIZE][1] == EMPTY && board[BOARD_SIZE][2] == player) c_score++;
+        if (board[BOARD_SIZE][BOARD_SIZE] == EMPTY && board[BOARD_SIZE][BOARD_SIZE-1] == player) c_score++;
     }
 
     if (tmp > BOARD_SIZE) tmp = BOARD_SIZE;
@@ -194,8 +195,8 @@ void eval_edge(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player, score_t *scor
     }
 
     if (!is_wing[0] && !is_wing[1]) {
-        if (board[2][BOARD_SIZE] == player) c_score++;
-        if (board[BOARD_SIZE-1][BOARD_SIZE] == player) c_score++;
+        if (board[1][BOARD_SIZE] == EMPTY && board[2][BOARD_SIZE] == player) c_score++;
+        if (board[BOARD_SIZE][BOARD_SIZE] == EMPTY && board[BOARD_SIZE-1][BOARD_SIZE] == player) c_score++;
     }
 
     if (tmp > BOARD_SIZE) tmp = BOARD_SIZE;
@@ -212,6 +213,7 @@ void eval_edge(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player, score_t *scor
 /*
 角の評価
 各角の石とX打ちを数え上げる。
+また、重複して数えていた角の確定石を減らす。
 */
 void eval_corner(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player, score_t *score) {
 
@@ -220,19 +222,31 @@ void eval_corner(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player, score_t *sc
     score -> x_num = 0;
 
     // 左上
-    if (board[1][1] == player) (score -> corner_stone_num)++;
+    if (board[1][1] == player) {
+        score -> fixed_stone_num--;
+        (score -> corner_stone_num)++;
+    }
     else if (board[1][1] == EMPTY && board[2][2] == player) (score -> x_num)++;
 
     // 右上
-    if (board[1][BOARD_SIZE] == player) (score -> corner_stone_num)++;
+    if (board[1][BOARD_SIZE] == player) {
+        score -> fixed_stone_num--;
+        (score -> corner_stone_num)++;
+    }
     else if (board[1][BOARD_SIZE] == EMPTY && board[2][BOARD_SIZE-1] == player) (score -> x_num)++;
 
     // 左下
-    if (board[BOARD_SIZE][1] == player) (score -> corner_stone_num)++;
+    if (board[BOARD_SIZE][1] == player) {
+        score -> fixed_stone_num--;
+        (score -> corner_stone_num)++;
+    }
     else if (board[BOARD_SIZE][1] == EMPTY && board[BOARD_SIZE-1][2] == player) (score -> x_num)++;
 
     // 右下
-    if (board[BOARD_SIZE][BOARD_SIZE] == player) (score -> corner_stone_num)++;
+    if (board[BOARD_SIZE][BOARD_SIZE] == player) {
+        score -> fixed_stone_num--;
+        (score -> corner_stone_num)++;
+    }
     else if (board[BOARD_SIZE][BOARD_SIZE] == EMPTY && board[BOARD_SIZE-1][BOARD_SIZE-1] == player) (score -> x_num)++;
 }
 
@@ -294,6 +308,16 @@ int evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     eval_open(board, player, &my_score);
     eval_putpos(board, player, &my_score);
 
+    // printf("weights\n%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d\n\n", \
+    //     weights_s.fixed_stone_weight,
+    //     weights_s.corner_stone_weight,
+    //     weights_s.open_weight,
+    //     weights_s.putpos_weight,
+    //     weights_s.mountain_weight,
+    //     weights_s.wing_weight,
+    //     weights_s.c_weight,
+    //     weights_s.x_weight);
+
     result += ( \
         my_score.fixed_stone_num * weights_s.fixed_stone_weight + \
         my_score.corner_stone_num * weights_s.corner_stone_weight + \
@@ -304,7 +328,7 @@ int evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
         my_score.c_num * weights_s.c_weight + \
         my_score.x_num * weights_s.x_weight);
 
-    // printf("%d, %d, %d, %d, %d, %d, %d, %d\n", \
+    // printf("my score\n%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d\n\n", \
     //     my_score.fixed_stone_num * weights_s.fixed_stone_weight,
     //     my_score.corner_stone_num * weights_s.corner_stone_weight,
     //     my_score.open_num * weights_s.open_weight,
@@ -329,7 +353,7 @@ int evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
         opponent_score.c_num * weights_s.c_weight + \
         opponent_score.x_num * weights_s.x_weight);
 
-    // printf("%d, %d, %d, %d, %d, %d, %d, %d\n", \
+    // printf("opponent score\n%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d\n\n", \
     //     opponent_score.fixed_stone_num * weights_s.fixed_stone_weight,
     //     opponent_score.corner_stone_num * weights_s.corner_stone_weight,
     //     opponent_score.open_num * weights_s.open_weight,
@@ -339,7 +363,7 @@ int evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     //     opponent_score.c_num * weights_s.c_weight,
     //     opponent_score.x_num * weights_s.x_weight);
 
-    // printf("eval score -> %d\n", result);
+    // printf("eval score -> %5d\n", result);
 
     return result;
 }

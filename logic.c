@@ -151,12 +151,14 @@ void expand(Game *game, Node *node) {
         length = make_board_to_putlist(node -> board, opponent(node -> player), reverse, putpos);
         if (length == 0) {
             // 決着ノード
+            // 特に何もしなくても大丈夫
             // printf("game end!\n");
         } else {
             // パスノード
             // printf("pass node!\n");
             // 盤面を変えない状態でノードを作成。
             node -> children[0] = (Node *)malloc(sizeof(Node));
+            score = evaluation(node -> board, opponent(node -> player));
             node_init(node -> children[0], node, node -> board, -(node -> score), opponent(node -> player));
             node -> child_num = 1;
         }
@@ -177,7 +179,7 @@ void expand(Game *game, Node *node) {
             if (node -> children[i] == NULL) {
                 exit(0);
             }
-            score = evaluation(node -> board, node -> player);
+            score = evaluation(putted_board, node -> player);
             node_init(node -> children[i], node, putted_board, score, opponent(node -> player));
         }
 
@@ -199,7 +201,7 @@ y_i = -------------------------
 */
 void chance_update(Node *nodes[], int node_num) {
     double sum_exp = 0;
-    const int T = 50; // ソフトマックス関数の温度。
+    const int T = 10; // ソフトマックス関数の温度。
 
     int i;
     for (i = 0; i < node_num;i++) {
@@ -268,7 +270,7 @@ void all_free(Node *node) {
 int pos[]の中に次に打つべき手を格納する。
 */
 void bot_softmax(Game *game, int pos[]) {
-    const int max_count = 1500;
+    const int max_count = 10000;
     int count;
 
     // 各着手可能位置を調査
@@ -304,7 +306,7 @@ void bot_softmax(Game *game, int pos[]) {
     pos[0] = putpos[0][0];
     pos[1] = putpos[0][1];
     for (i = 0;i < length;i++) {
-        // printf("pos(%d, %d) -> score: %f\n", putpos[i][0], putpos[i][1], root -> children[i] -> score);
+        printf("pos(%d, %d) -> score: %f\n", putpos[i][0], putpos[i][1], root -> children[i] -> score);
         if (max_score < root -> children[i] -> score) {
             max_score = root -> children[i] -> score;
             pos[0] = putpos[i][0];
