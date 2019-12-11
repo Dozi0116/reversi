@@ -275,6 +275,13 @@ void bot_softmax(Game *game, int pos[]) {
     char putpos[30][2];
     int length = make_putlist(game -> reverse, putpos);
 
+    // 探索時間短縮のため、置ける場所が1箇所なら即return
+    if (length == 1) {
+        pos[0] = putpos[0][0];
+        pos[1] = putpos[0][1];
+        return;
+    }
+
     int i, j;
     int index;
     // rootノードを生成しておく
