@@ -20,6 +20,8 @@ typedef struct Node {
     double chance; // このノードの選出確率
 } Node;
 
+extern double softmax_T;
+
 // 対人戦のときに使う。人間が標準入力から入力する。
 extern void player(struct Game *game, int pos[]);
 
