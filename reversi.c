@@ -209,6 +209,8 @@ void show_board(Game *game) {
             break;
     }
     printf("o -> %d, x -> %d\n", b_count, w_count);
+
+    printf("\n\n\n");
 }
 
 void prev_board(Game *game,
@@ -269,11 +271,14 @@ int make_board_to_putlist(char board[BOARD_SIZE+2][BOARD_SIZE+2],
                     
                     if (board[dy][dx] == player) {
                         reverse[y][x] |= FLAG[i];
-                        putlist[index][0] = y;
-                        putlist[index][1] = x;
-                        index++;
                     }
                 }
+            }
+
+            if (reverse[y][x] != 0) {
+                putlist[index][0] = y;
+                putlist[index][1] = x;
+                index++;
             }
         }
     }
