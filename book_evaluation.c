@@ -11,14 +11,14 @@
 #define ANY 10
 
 typedef struct {
-    int corner_stone_weight;
-    int fixed_stone_weight;
-    int open_weight;
-    int putpos_weight;
-    int mountain_weight;
-    int wing_weight;
-    int c_weight;
-    int x_weight;
+    double corner_stone_weight;
+    double fixed_stone_weight;
+    double open_weight;
+    double putpos_weight;
+    double mountain_weight;
+    double wing_weight;
+    double c_weight;
+    double x_weight;
 } weights_t;
 
 typedef struct {
@@ -34,15 +34,16 @@ typedef struct {
 
 // 本を参考にした数値
 // 0は係数が無いところ
+// 評価スコアがインフレするため、全部に0.1をかけた
 weights_t weights_s = {
     0, // corner
-    101, // fixed(stable)
-    -13, // open(liberty)
-    67, // putpos(mobility)
+    10.1, // fixed(stable)
+    -1.3, // open(liberty)
+    6.7, // putpos(mobility)
     0, // mountain
-    -308, // wing(wing)
-    -552, // c(Cmove)
-    -449  // x(Xmove)
+    -30.8, // wing(wing)
+    -55.2, // c(Cmove)
+    -44.9  // x(Xmove)
 };
 
 //序盤・中盤・終盤で評価方法を変える
@@ -298,17 +299,17 @@ player: 置いた人
 
 返り値: 評価スコア
 */
-int evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
-    score_t my_score = {0};
-    score_t opponent_score = {0};
-    int result = 0;
+double evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
+    score_t my_score = {0.0};
+    score_t opponent_score = {0.0};
+    double result = 0;
 
     eval_edge(board, player, &my_score);
     eval_corner(board, player, &my_score);
     eval_open(board, player, &my_score);
     eval_putpos(board, player, &my_score);
 
-    // printf("weights\n%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d\n\n", \
+    // printf("weights\n%5lf, %5lf, %5lf, %5lf, %5lf, %5lf, %5lf, %5lf\n\n", \
     //     weights_s.fixed_stone_weight,
     //     weights_s.corner_stone_weight,
     //     weights_s.open_weight,
@@ -319,16 +320,16 @@ int evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     //     weights_s.x_weight);
 
     result += ( \
-        my_score.fixed_stone_num * weights_s.fixed_stone_weight + \
-        my_score.corner_stone_num * weights_s.corner_stone_weight + \
-        my_score.open_num * weights_s.open_weight + \
-        my_score.putpos_num * weights_s.putpos_weight + \
-        my_score.mountain_num * weights_s.mountain_weight + \
-        my_score.wing_num * weights_s.wing_weight + \
-        my_score.c_num * weights_s.c_weight + \
-        my_score.x_num * weights_s.x_weight);
+        (double)my_score.fixed_stone_num * weights_s.fixed_stone_weight + \
+        (double)my_score.corner_stone_num * weights_s.corner_stone_weight + \
+        (double)my_score.open_num * weights_s.open_weight + \
+        (double)my_score.putpos_num * weights_s.putpos_weight + \
+        (double)my_score.mountain_num * weights_s.mountain_weight + \
+        (double)my_score.wing_num * weights_s.wing_weight + \
+        (double)my_score.c_num * weights_s.c_weight + \
+        (double)my_score.x_num * weights_s.x_weight);
 
-    // printf("my score\n%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d\n\n", \
+    // printf("my score\n%5lf, %5lf, %5lf, %5lf, %5lf, %5lf, %5lf, %5lf\n\n", \
     //     my_score.fixed_stone_num * weights_s.fixed_stone_weight,
     //     my_score.corner_stone_num * weights_s.corner_stone_weight,
     //     my_score.open_num * weights_s.open_weight,
@@ -342,18 +343,21 @@ int evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     eval_edge(board, opponent(player), &opponent_score);
     eval_corner(board, opponent(player), &opponent_score);
     eval_open(board, opponent(player), &opponent_score);
+    // 原本にはなかったが、相手のスコア = -(自分のスコア)とするため、追加した。
+    eval_putpos(board, player, &opponent_score);
+
 
     result -= ( \
-        opponent_score.fixed_stone_num * weights_s.fixed_stone_weight + \
-        opponent_score.corner_stone_num * weights_s.corner_stone_weight + \
-        opponent_score.open_num * weights_s.open_weight + \
-        opponent_score.putpos_num * weights_s.putpos_weight + \
-        opponent_score.mountain_num * weights_s.mountain_weight + \
-        opponent_score.wing_num * weights_s.wing_weight + \
-        opponent_score.c_num * weights_s.c_weight + \
-        opponent_score.x_num * weights_s.x_weight);
+        (double)opponent_score.fixed_stone_num * weights_s.fixed_stone_weight + \
+        (double)opponent_score.corner_stone_num * weights_s.corner_stone_weight + \
+        (double)opponent_score.open_num * weights_s.open_weight + \
+        (double)opponent_score.putpos_num * weights_s.putpos_weight + \
+        (double)opponent_score.mountain_num * weights_s.mountain_weight + \
+        (double)opponent_score.wing_num * weights_s.wing_weight + \
+        (double)opponent_score.c_num * weights_s.c_weight + \
+        (double)opponent_score.x_num * weights_s.x_weight);
 
-    // printf("opponent score\n%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d\n\n", \
+    // printf("opponent score\n%5lf, %5lf, %5lf, %5lf, %5lf, %5lf, %5lf, %5lf\n\n", \
     //     opponent_score.fixed_stone_num * weights_s.fixed_stone_weight,
     //     opponent_score.corner_stone_num * weights_s.corner_stone_weight,
     //     opponent_score.open_num * weights_s.open_weight,
@@ -363,7 +367,7 @@ int evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     //     opponent_score.c_num * weights_s.c_weight,
     //     opponent_score.x_num * weights_s.x_weight);
 
-    // printf("eval score -> %5d\n", result);
+    // printf("eval score -> %5lf\n", result);
 
     return result;
 }
