@@ -78,6 +78,7 @@ struct Node *roulette(
 
     int i;
     double chance = (double)rand() / RAND_MAX;
+    printf("chance -> %lf\n", chance);
     double probability = 0;
     for (i = 0;i < length;i++) {
         probability += nodes[i] -> chance;
@@ -342,5 +343,199 @@ void bot_softmax(Game *game, int pos[]) {
     }
 
     // nodeを開放する
+    all_free(root);
+}
+
+
+typedef struct {
+    double score;
+    int pos[2];
+} minimax_t;
+
+#define MIN_SCORE -99999
+#define MAX_SCORE 99999
+
+int min_calc(Game *game, Node *node, int depth_limit, int alpha);
+int max_calc(Game *game, Node *node, int depth_limit, int beta);
+
+int max_calc(Game *game, Node *node, int depth_limit, int beta) {
+
+    // 深さ制限に達していたら返す。
+    if (depth_limit <= 0) return evaluation(node -> board, game -> turn);
+
+    char putpos[30][2];
+    char reverse[BOARD_SIZE+2][BOARD_SIZE+2] = {0};
+
+    int length = make_board_to_putlist(node -> board, node -> player, reverse, putpos);
+    int result = 0;
+
+    int i, j, k, score, max_score = MIN_SCORE;
+
+    if (length == 0) {
+        length = make_board_to_putlist(node -> board, opponent(node -> player), reverse, putpos);
+        if (length == 0) {
+            // 決着ノード
+            result = count_board(node -> board, game -> turn);
+            if (result == 1) {
+                return MAX_SCORE;
+            } else if (result == -1) {
+                return MIN_SCORE;
+            } else if (result == 0) {
+                return 0;
+            }
+        } else {
+            // パスノード
+            // 全く同じ盤面を作り、擬似的につなげる。
+            node -> children[0] = (Node *)malloc(sizeof(Node));
+            node_init(node -> children[0], node, node -> board, 0, EMPTY);
+            node -> child_num = 1;
+
+            return min_calc(game, node -> children[0], depth_limit - 1, max_score);
+        }
+    }
+
+    char putted_board[BOARD_SIZE+2][BOARD_SIZE+2];
+    int pos[2];
+
+    // 通常ノード
+    for (i = 0;i < length;i++) {
+        // boardをコピー
+        for (j = 0;j < BOARD_SIZE+2;j++) {
+            for (k = 0;k < BOARD_SIZE+2;k++) {
+                putted_board[j][k] = node -> board[j][k];
+            }
+        }
+
+        pos[0] = putpos[i][0];
+        pos[1] = putpos[i][1];
+        put_stone_test(putted_board, reverse, pos, node -> player);
+        node -> children[i] = (Node *)malloc(sizeof(Node));
+        node_init(node -> children[i], node, putted_board, 0, EMPTY);
+        score = min_calc(game, node -> children[i], depth_limit - 1, max_score);
+
+        if (score > max_score) {
+            max_score = score;
+        }
+
+        if (beta < max_score) {
+            // 探索を打ち切る
+            break;
+        }
+    }
+
+    return max_score;
+}
+
+int min_calc(Game *game, Node *node, int depth_limit, int alpha) {
+
+    // 深さ制限に達していたら返す。
+    if (depth_limit <= 0) return evaluation(node -> board, game -> turn);
+
+    char putpos[30][2];
+    char reverse[BOARD_SIZE+2][BOARD_SIZE+2] = {0};
+
+    int length = make_board_to_putlist(node -> board, node -> player, reverse, putpos);
+    int result = 0;
+
+    int i, j, k, score, min_score = MAX_SCORE;
+
+    if (length == 0) {
+        length = make_board_to_putlist(node -> board, opponent(node -> player), reverse, putpos);
+        if (length == 0) {
+            // 決着ノード
+            result = count_board(node -> board, game -> turn);
+            if (result == 1) {
+                return MAX_SCORE;
+            } else if (result == -1) {
+                return MIN_SCORE;
+            } else if (result == 0) {
+                return 0;
+            }
+        } else {
+            // パスノード
+            // 全く同じ盤面を作り、擬似的につなげる。
+            node -> children[0] = (Node *)malloc(sizeof(Node));
+            node_init(node -> children[0], node, node -> board, 0, EMPTY);
+            node -> child_num = 1;
+
+            return max_calc(game, node -> children[0], depth_limit - 1, min_score);
+        }
+    }
+
+    char putted_board[BOARD_SIZE+2][BOARD_SIZE+2];
+    int pos[2];
+
+    // 通常ノード
+    for (i = 0;i < length;i++) {
+        // boardをコピー
+        for (j = 0;j < BOARD_SIZE+2;j++) {
+            for (k = 0;k < BOARD_SIZE+2;k++) {
+                putted_board[j][k] = node -> board[j][k];
+            }
+        }
+
+        pos[0] = putpos[i][0];
+        pos[1] = putpos[i][1];
+        put_stone_test(putted_board, reverse, pos, node -> player);
+        node -> children[i] = (Node *)malloc(sizeof(Node));
+        node_init(node -> children[i], node, putted_board, 0, EMPTY);
+        score = max_calc(game, node -> children[i], depth_limit - 1, min_score);
+
+        if (score > min_score) {
+            min_score = score;
+        }
+
+        if (min_score < alpha) {
+            // 探索を切る
+            break;
+        }
+    }
+
+    return min_score;
+}
+
+void bot_alpha_beta(Game *game, int pos[]) {
+    // とりあえずminimax
+    const int depth_limit = 4;
+
+    // 1手目(max)はここで行う
+    char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
+    char putpos[30][2];
+    int length = make_board_to_putlist(game -> board, game -> turn, reverse, putpos);
+    int temp_pos[2];
+
+    pos[0] = putpos[0][0];
+    pos[1] = putpos[0][1];
+
+    if (length == 1) return;
+
+    Node *root = (Node *)malloc(sizeof(Node));
+    node_init(root, NULL, game -> board, 0, EMPTY);
+
+    char putted_board[BOARD_SIZE+2][BOARD_SIZE+2];
+    int i, j, k, score, max_score = MIN_SCORE;
+
+    for (i = 0;i < length;i++) {
+        // boardをコピー
+        for (j = 0;j < BOARD_SIZE+2;j++) {
+            for (k = 0;k < BOARD_SIZE+2;k++) {
+                putted_board[j][k] = game -> board[j][k];
+            }
+        }
+
+        temp_pos[0] = putpos[i][0];
+        temp_pos[1] = putpos[i][1];
+        put_stone_test(putted_board, reverse, temp_pos, game -> turn);
+        root -> children[i] = (Node *)malloc(sizeof(Node));
+        node_init(root -> children[i], root, putted_board, 0, EMPTY);
+        score = min_calc(game, root -> children[i], depth_limit - 1, max_score);
+
+        if (score > max_score) {
+            max_score = score;
+            pos[0] = putpos[i][0];
+            pos[1] = putpos[i][1];
+        }        
+    }
+
     all_free(root);
 }

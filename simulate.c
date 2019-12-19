@@ -2,6 +2,7 @@
 #include "reversi.h"
 #include "logic.h"
 #include <time.h>
+#include <stdlib.h>
 
 int main(void) {
     Game game;
@@ -11,11 +12,9 @@ int main(void) {
     // ゲームで双方のプレイヤーが使うロジックを突っ込む。
     void (*rogic[PLAYERS])(struct Game*, int []);
     rogic[BLACK] = bot_softmax;
-    rogic[WHITE] = bot_softmax;
+    rogic[WHITE] = bot_alpha_beta;
 
-    // srand((unsigned int)time(NULL));
-
-    printf("%d\n", game.turn);
+    srand(12346);
 
     while (TRUE) {
         show_board(&game);

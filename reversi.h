@@ -45,5 +45,6 @@ extern void put_stone_test(char board[BOARD_SIZE+2][BOARD_SIZE+2],
     int pos[],
     int player);
 extern void board_print(char board[BOARD_SIZE+2][BOARD_SIZE+2]);
+extern int count_board(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player);
 
 #endif

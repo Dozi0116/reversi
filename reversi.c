@@ -340,3 +340,21 @@ void board_print(char board[BOARD_SIZE+2][BOARD_SIZE+2]) {
         printf("\n");
     }
 }
+
+/*
+ボードの状態を数え、playerが勝っているなら1, 負けているなら-1, 同点なら0を返す。
+*/
+int count_board(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
+    int x, y;
+    int stone = 0;
+    for (y = 0;y <= BOARD_SIZE;y++) {
+        for (x = 0;x <= BOARD_SIZE;x++) {
+            if (board[y][x] == player) stone++;
+            else if (board[y][x] == opponent(player)) stone--;
+        }
+    }
+
+    if (stone > 0) return 1;
+    if (stone < 0) return -1;
+    if (stone == 0) return 0;
+}

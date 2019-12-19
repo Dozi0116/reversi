@@ -31,4 +31,7 @@ extern void bot_random(struct Game *game, int pos[]);
 // ソフトマックス関数に基づいて最善手を選択。
 extern void bot_softmax(struct Game *game, int pos[]);
 
+// αβ探索を用いて最善手を選択。
+extern void bot_alpha_beta(Game *game, int pos[]);
+
 #endif
