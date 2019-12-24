@@ -13,10 +13,10 @@ int main(void) {
     // ゲームで双方のプレイヤーが使うロジックを突っ込む。
     void (*rogic[PLAYERS])(struct Game*, int []);
 
-    const int match = 4;
+    const int match = 500;
     int T;
 
-    for (T = 1;T <= 3;T++){
+    for (T = 1;T <= 100;T++){
         softmax_T = T;
         printf("T = %lf\n", softmax_T);
         int pos, total_win = 0, total_lose = 0;
@@ -51,7 +51,7 @@ int main(void) {
                 // printf("game %d\n", i+1);
 
                 result = count_board(game.board, color);
-                show_board(&game);
+                // show_board(&game);
                 if (result == 1) win++;
                 else if (result == -1) lose++;
             }
