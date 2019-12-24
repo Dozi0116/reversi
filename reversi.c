@@ -32,11 +32,6 @@ void game_init(Game *game) {
     scoreのとり方を変更
     char score[64][8][8]として、盤面の情報を毎ターン保持しておく方向に変更。
     */
-
-
-    // ランダム
-    int seed = 1123;    
-    srand(seed);
     
     int start_pos[4][2] = {
         {4, 4},

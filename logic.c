@@ -78,7 +78,7 @@ struct Node *roulette(
 
     int i;
     double chance = (double)rand() / RAND_MAX;
-    printf("chance -> %lf\n", chance);
+    // printf("chance -> %lf\n", chance);
     double probability = 0;
     for (i = 0;i < length;i++) {
         probability += nodes[i] -> chance;

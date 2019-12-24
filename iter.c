@@ -7,17 +7,14 @@
 
 int main(void) {
     
+    srand(2019);
+
+    Game game;
     // ゲームで双方のプレイヤーが使うロジックを突っ込む。
     void (*rogic[PLAYERS])(struct Game*, int []);
-    rogic[BLACK] = bot_softmax;
-    rogic[WHITE] = bot_random;
-
-    srand(12346);
 
     const int match = 4;
     int T;
-
-    printf("%d, %d, %d, %d, %d\n", rand(), rand(), rand(), rand(), rand());
 
     for (T = 1;T <= 3;T++){
         softmax_T = T;
@@ -39,7 +36,6 @@ int main(void) {
             int i, j, k, stone, win = 0, lose = 0, result = 0;
 
             for (i = 0;i < match / 2;i++){
-                Game game;
                 game_init(&game);
                 int pos[2];
 
