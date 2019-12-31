@@ -1,0 +1,75 @@
+T = 1, order = 1, rand = 2020
+	win -> 178, lose -> 13, draw -> -91
+T = 1, order = 2, rand = 2020
+	win -> 0, lose -> 200, draw -> -100
+T = 2, order = 1, rand = 2022
+	win -> 173, lose -> 24, draw -> -97
+T = 2, order = 2, rand = 2022
+	win -> 0, lose -> 200, draw -> -100
+T = 3, order = 1, rand = 2025
+	win -> 174, lose -> 12, draw -> -86
+T = 3, order = 2, rand = 2025
+	win -> 0, lose -> 200, draw -> -100
+T = 4, order = 1, rand = 2029
+	win -> 170, lose -> 24, draw -> -94
+T = 4, order = 2, rand = 2029
+	win -> 0, lose -> 200, draw -> -100
+T = 5, order = 1, rand = 2034
+	win -> 180, lose -> 17, draw -> -97
+T = 5, order = 2, rand = 2034
+	win -> 0, lose -> 200, draw -> -100
+T = 6, order = 1, rand = 2040
+	win -> 164, lose -> 25, draw -> -89
+T = 6, order = 2, rand = 2040
+	win -> 0, lose -> 200, draw -> -100
+T = 7, order = 1, rand = 2047
+	win -> 171, lose -> 21, draw -> -92
+T = 7, order = 2, rand = 2047
+	win -> 0, lose -> 200, draw -> -100
+T = 8, order = 1, rand = 2055
+	win -> 163, lose -> 23, draw -> -86
+T = 8, order = 2, rand = 2055
+	win -> 0, lose -> 200, draw -> -100
+T = 9, order = 1, rand = 2064
+	win -> 176, lose -> 18, draw -> -94
+T = 9, order = 2, rand = 2064
+	win -> 0, lose -> 200, draw -> -100
+T = 10, order = 1, rand = 2074
+	win -> 169, lose -> 25, draw -> -94
+T = 10, order = 2, rand = 2074
+	win -> 0, lose -> 200, draw -> -100
+T = 11, order = 1, rand = 2085
+	win -> 168, lose -> 27, draw -> -95
+T = 11, order = 2, rand = 2085
+	win -> 0, lose -> 199, draw -> -99
+T = 12, order = 1, rand = 2097
+	win -> 168, lose -> 27, draw -> -95
+T = 12, order = 2, rand = 2097
+	win -> 0, lose -> 200, draw -> -100
+T = 13, order = 1, rand = 2110
+	win -> 170, lose -> 23, draw -> -93
+T = 13, order = 2, rand = 2110
+	win -> 0, lose -> 200, draw -> -100
+T = 14, order = 1, rand = 2124
+	win -> 177, lose -> 18, draw -> -95
+T = 14, order = 2, rand = 2124
+	win -> 0, lose -> 200, draw -> -100
+T = 15, order = 1, rand = 2139
+	win -> 173, lose -> 16, draw -> -89
+T = 15, order = 2, rand = 2139
+	win -> 0, lose -> 200, draw -> -100
+T = 16, order = 1, rand = 2155
+	win -> 161, lose -> 24, draw -> -85
+T = 16, order = 2, rand = 2155
+T = 17, order = 1, rand = 2172
+	win -> 177, lose -> 18, draw -> -95
+T = 17, order = 2, rand = 2172
+T = 18, order = 1, rand = 2190
+	win -> 176, lose -> 18, draw -> -94
+T = 18, order = 2, rand = 2190
+T = 19, order = 1, rand = 2209
+	win -> 170, lose -> 21, draw -> -91
+T = 19, order = 2, rand = 2209
+T = 1, order = 1, rand = 2020
+	win -> 131, lose -> 10, draw -> 59
+T = 1, order = 2, rand = 2020

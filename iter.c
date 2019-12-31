@@ -5,64 +5,70 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-int main(void) {
+int main(int argc, char *argv[]) {
     
-    srand(2019);
+    if (argc != 4) {
+        printf("usage: ./test <order> <T> <seed>\n");
+        printf("order -> 1: first, 2: second\n");
+        printf("T -> 1-100\n");
+        printf("seed -> random seed\n");
 
-    Game game;
+        exit(1);
+    }
+
+    srand(atoi(argv[3]));
+    softmax_T = atoi(argv[2]);
     // ゲームで双方のプレイヤーが使うロジックを突っ込む。
     void (*rogic[PLAYERS])(struct Game*, int []);
+    const int order = atoi(argv[1]);
+    int color;
+    if (order == 1) {
+        // softmax first
+        rogic[BLACK] = bot_softmax;
+        rogic[WHITE] = bot_alpha_beta;
+        color = BLACK;
+    } else if (order == 2) {
+        // softamx second
+        rogic[BLACK] = bot_alpha_beta;
+        rogic[WHITE] = bot_softmax;
+        color = WHITE;
+    } else {
+        printf("order error.\n");
+    }
 
-    const int match = 500;
-    int T;
+    Game game;
 
-    for (T = 1;T <= 100;T++){
-        softmax_T = T;
-        printf("T = %lf\n", softmax_T);
-        int pos, total_win = 0, total_lose = 0;
-        int color;
-        for (pos = 0;pos <= 1;pos++){
-            if (pos == 0) {
-                rogic[BLACK] = bot_softmax;
-                rogic[WHITE] = bot_alpha_beta;
-                color = BLACK;
-                printf("softmax 1st\n");
-            } else {
-                rogic[BLACK] = bot_alpha_beta;
-                rogic[WHITE] = bot_softmax;
-                color = WHITE;
-                printf("softmax 2nd\n");
+
+    const int match = 200;
+
+    int total_win = 0, total_lose = 0;
+    int i, j, k, stone, win = 0, lose = 0, result = 0;
+
+    int pos[2];
+
+    for (i = 0;i < match;i++){
+        game_init(&game);
+
+        printf("game %d\n", i+1);
+
+        while (TRUE) {
+            printf("\tturn %d\n", game.stone_num-3);
+            rogic[game.turn](&game, pos);
+
+            put_stone(&game, pos, game.turn);
+
+            if (next_turn(&game) == TRUE) {
+                break;
             }
-            int i, j, k, stone, win = 0, lose = 0, result = 0;
-
-            for (i = 0;i < match / 2;i++){
-                game_init(&game);
-                int pos[2];
-
-                while (TRUE) {
-                    rogic[game.turn](&game, pos);
-
-                    put_stone(&game, pos, game.turn);
-
-                    if (next_turn(&game) == TRUE) {
-                        break;
-                    }
-                }
-                // printf("game %d\n", i+1);
-
-                result = count_board(game.board, color);
-                // show_board(&game);
-                if (result == 1) win++;
-                else if (result == -1) lose++;
-            }
-
-            printf("\twin -> %d, lose -> %d, draw -> %d\n", win, lose, match / 2 - win - lose);
-            total_win += win;
-            total_lose += lose;
         }
 
-        printf("total win -> %d, lose -> %d\n", total_win, total_lose);
+        result = count_board(game.board, color);
+        // show_board(&game);
+        if (result == 1) win++;
+        else if (result == -1) lose++;
     }
+
+    printf("\twin -> %d, lose -> %d, draw -> %d\n", win, lose, match - win - lose);
         
     return 0;
 }

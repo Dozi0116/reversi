@@ -208,7 +208,7 @@ void expand(Game *game, Node *node) {
 }
 
 
-double softmax_T = 10;
+double softmax_T;
 
 /*
 温度付きソフトマックス関数
@@ -221,9 +221,9 @@ y_i = -------------------------
 */
 void chance_update(Node *nodes[], int node_num) {
     double sum_exp = 0;
-    // const int T = 10; // ソフトマックス関数の温度。
 
     int i;
+    // printf("softmax_T -> %lf\n", softmax_T);
     for (i = 0; i < node_num;i++) {
         if (nodes[i] -> score / softmax_T > 700) {
             printf("over 700!!!!\n");
@@ -274,12 +274,22 @@ void propagation(Game *game, Node *node) {
 
 
 /*
+nodeの中身を開放する
+*/
+void node_free(Node *node) {
+  free(&(node -> parent));
+  // free(node -> board);
+}
+
+/*
 探索に使用したノードを開放する関数。
 rootノードを渡すと、再帰的に開放していく。
 */
 void all_free(Node *node) {
     if (node -> child_num == 0) {
+        node_free(node);
         free(node);
+        node = NULL;
         return;
     }
     int i;
@@ -287,7 +297,9 @@ void all_free(Node *node) {
         all_free(node -> children[i]);
     }
 
+    node_free(node);
     free(node);
+    node = NULL;
     return;
 }
 
