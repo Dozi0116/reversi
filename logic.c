@@ -274,20 +274,11 @@ void propagation(Game *game, Node *node) {
 
 
 /*
-nodeの中身を開放する
-*/
-void node_free(Node *node) {
-  free(&(node -> parent));
-  // free(node -> board);
-}
-
-/*
 探索に使用したノードを開放する関数。
 rootノードを渡すと、再帰的に開放していく。
 */
 void all_free(Node *node) {
     if (node -> child_num == 0) {
-        node_free(node);
         free(node);
         node = NULL;
         return;
@@ -297,7 +288,6 @@ void all_free(Node *node) {
         all_free(node -> children[i]);
     }
 
-    node_free(node);
     free(node);
     node = NULL;
     return;
