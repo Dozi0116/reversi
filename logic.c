@@ -413,6 +413,7 @@ int max_calc(Game *game, Node *node, int depth_limit, int beta) {
         put_stone_test(putted_board, reverse, pos, node -> player);
         node -> children[i] = (Node *)malloc(sizeof(Node));
         node_init(node -> children[i], node, putted_board, 0, EMPTY);
+        node -> child_num++;
         score = min_calc(game, node -> children[i], depth_limit - 1, max_score);
 
         if (score > max_score) {
@@ -481,6 +482,7 @@ int min_calc(Game *game, Node *node, int depth_limit, int alpha) {
         put_stone_test(putted_board, reverse, pos, node -> player);
         node -> children[i] = (Node *)malloc(sizeof(Node));
         node_init(node -> children[i], node, putted_board, 0, EMPTY);
+        node -> child_num++;
         score = max_calc(game, node -> children[i], depth_limit - 1, min_score);
 
         if (score > min_score) {
@@ -530,6 +532,7 @@ void bot_alpha_beta(Game *game, int pos[]) {
         put_stone_test(putted_board, reverse, temp_pos, game -> turn);
         root -> children[i] = (Node *)malloc(sizeof(Node));
         node_init(root -> children[i], root, putted_board, 0, EMPTY);
+        root -> child_num++;
         score = min_calc(game, root -> children[i], depth_limit - 1, max_score);
 
         if (score > max_score) {
@@ -538,6 +541,7 @@ void bot_alpha_beta(Game *game, int pos[]) {
             pos[1] = putpos[i][1];
         }        
     }
+
 
     all_free(root);
 }
