@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
     Game game;
 
 
-    const int match = 200;
+    const int match = 500;
 
     int total_win = 0, total_lose = 0;
     int i, j, k, stone, win = 0, lose = 0, result = 0;
@@ -49,10 +49,10 @@ int main(int argc, char *argv[]) {
     for (i = 0;i < match;i++){
         game_init(&game);
 
-        printf("game %d\n", i+1);
+        // printf("game %d\n", i+1);
 
         while (TRUE) {
-            printf("\tturn %d\n", game.stone_num-3);
+            // printf("\tturn %d\n", game.stone_num-3);
             rogic[game.turn](&game, pos);
 
             put_stone(&game, pos, game.turn);
