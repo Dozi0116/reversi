@@ -32,6 +32,7 @@ void expand(Game *game, Node *node); // else部分
 void chance_update(Node *nodes[], int node_num); // OK
 void propagation(Game *game, Node *node); // OK
 
+int match = 0;
 
 /*
 人間がキーボードから入力を行う用のロジック
@@ -78,9 +79,14 @@ struct Node *roulette(
 
     int i;
     double chance = (double)rand() / RAND_MAX;
-    // printf("chance -> %lf\n", chance);
+    if (match == 70) {
+        printf("chance -> %lf\n", chance);
+    }
     double probability = 0;
     for (i = 0;i < length;i++) {
+        // if (match == 70) {
+        //     printf("chance -> %lf\n", nodes[i] -> chance);
+        // }
         probability += nodes[i] -> chance;
         if (probability >= chance) {
             return nodes[i];
@@ -100,7 +106,13 @@ struct Node *search(Node *node) {
        return node; 
     }
 
-    return search(roulette(node -> children, node -> child_num));
+    Node *target = roulette(node -> children, node -> child_num);
+    if (target <= 0x1000) {
+        printf("error!! address is %p\n", target);
+        target = roulette(node -> children, node -> child_num);
+    }
+
+    return search(target);
 }
 
 /*
@@ -137,12 +149,12 @@ void node_init(Node *node,
 void expand(Game *game, Node *node) {
     // 置ける場所を求める
     int i, j, k;
-    char putted_board[BOARD_SIZE+2][BOARD_SIZE+2];
-    char putpos[30][2];
+    char putted_board[BOARD_SIZE+2][BOARD_SIZE+2] = {{0}};
+    char putpos[30][2] = {{0}};
     int pos[2];
     char reverse[BOARD_SIZE+2][BOARD_SIZE+2] = {0};
     int length = make_board_to_putlist(node -> board, node -> player, reverse, putpos);
-    double score;
+    double score = 0.0;
 
     if (length == 0) {
         // パスの可能性がある。ゲーム終了ではない可能性
@@ -203,7 +215,7 @@ void expand(Game *game, Node *node) {
 
         // printf("end expand\n");
 
-        node -> child_num = i;
+        node -> child_num = length;
     }
 }
 
@@ -323,6 +335,9 @@ void bot_softmax(Game *game, int pos[]) {
     node_init(root, NULL, game -> board, 0, game -> turn);
 
     for (i = 0;i < max_count;i++) {
+        if (match == 70) {
+            printf("i = %d\n", i);
+        }
         // 末端ノードを求める
         target = search(root);
         // 末端ノードを展開し、子ノードを広げる。

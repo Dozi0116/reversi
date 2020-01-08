@@ -21,6 +21,7 @@ typedef struct Node {
 } Node;
 
 extern double softmax_T;
+extern int match;
 
 // 対人戦のときに使う。人間が標準入力から入力する。
 extern void player(struct Game *game, int pos[]);

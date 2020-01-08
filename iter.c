@@ -39,19 +39,23 @@ int main(int argc, char *argv[]) {
     Game game;
 
 
-    const int match = 500;
+    const int match_max = 500;
 
     int total_win = 0, total_lose = 0;
     int i, j, k, stone, win = 0, lose = 0, result = 0;
 
     int pos[2];
 
-    for (i = 0;i < match;i++){
+    for (match = 0;match < match_max;match++){
         game_init(&game);
 
         // printf("game %d\n", i+1);
 
         while (TRUE) {
+            if (match == 70 && game.stone_num == 44) {
+                printf("hoge\n");
+                show_board(&game);
+            }
             // printf("\tturn %d\n", game.stone_num-3);
             rogic[game.turn](&game, pos);
 
@@ -68,7 +72,7 @@ int main(int argc, char *argv[]) {
         else if (result == -1) lose++;
     }
 
-    printf("\twin -> %d, lose -> %d, draw -> %d\n", win, lose, match - win - lose);
+    printf("\twin -> %d, lose -> %d, draw -> %d\n", win, lose, match_max - win - lose);
         
     return 0;
 }
