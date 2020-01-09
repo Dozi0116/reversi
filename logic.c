@@ -79,19 +79,17 @@ struct Node *roulette(
 
     int i;
     double chance = (double)rand() / RAND_MAX;
-    if (match == 70) {
-        printf("chance -> %lf\n", chance);
-    }
     double probability = 0;
     for (i = 0;i < length;i++) {
-        // if (match == 70) {
-        //     printf("chance -> %lf\n", nodes[i] -> chance);
-        // }
         probability += nodes[i] -> chance;
         if (probability >= chance) {
             return nodes[i];
         }
     }
+
+    // 確率を足し上げていった結果、誤差で100%にわずかに満たず、たまたま引いた乱数がその僅かを指していた。
+    // 誤差なので、最後の要素を返す
+    return nodes[length-1];
 
 }
 
@@ -107,10 +105,6 @@ struct Node *search(Node *node) {
     }
 
     Node *target = roulette(node -> children, node -> child_num);
-    if (target <= 0x1000) {
-        printf("error!! address is %p\n", target);
-        target = roulette(node -> children, node -> child_num);
-    }
 
     return search(target);
 }
@@ -335,9 +329,6 @@ void bot_softmax(Game *game, int pos[]) {
     node_init(root, NULL, game -> board, 0, game -> turn);
 
     for (i = 0;i < max_count;i++) {
-        if (match == 70) {
-            printf("i = %d\n", i);
-        }
         // 末端ノードを求める
         target = search(root);
         // 末端ノードを展開し、子ノードを広げる。
