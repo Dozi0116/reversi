@@ -1,0 +1,399 @@
+T = 1, order = 1, rand = 3054
+	win -> 72, lose -> 4, draw -> 24
+T = 1, order = 2, rand = 3054
+	win -> 69, lose -> 4, draw -> 27
+T = 2, order = 1, rand = 3054
+	win -> 69, lose -> 7, draw -> 24
+T = 2, order = 2, rand = 3054
+	win -> 62, lose -> 6, draw -> 32
+T = 3, order = 1, rand = 3054
+	win -> 78, lose -> 6, draw -> 16
+T = 3, order = 2, rand = 3054
+	win -> 74, lose -> 4, draw -> 22
+T = 4, order = 1, rand = 3054
+	win -> 86, lose -> 4, draw -> 10
+T = 4, order = 2, rand = 3054
+	win -> 73, lose -> 8, draw -> 19
+T = 5, order = 1, rand = 3054
+	win -> 82, lose -> 5, draw -> 13
+T = 5, order = 2, rand = 3054
+	win -> 76, lose -> 9, draw -> 15
+T = 6, order = 1, rand = 3054
+	win -> 80, lose -> 13, draw -> 7
+T = 6, order = 2, rand = 3054
+	win -> 72, lose -> 18, draw -> 10
+T = 7, order = 1, rand = 3054
+	win -> 88, lose -> 9, draw -> 3
+T = 7, order = 2, rand = 3054
+	win -> 82, lose -> 13, draw -> 5
+T = 8, order = 1, rand = 3054
+	win -> 85, lose -> 10, draw -> 5
+T = 8, order = 2, rand = 3054
+	win -> 89, lose -> 6, draw -> 5
+T = 9, order = 1, rand = 3054
+	win -> 85, lose -> 12, draw -> 3
+T = 9, order = 2, rand = 3054
+	win -> 84, lose -> 11, draw -> 5
+T = 10, order = 1, rand = 3054
+	win -> 88, lose -> 10, draw -> 2
+T = 10, order = 2, rand = 3054
+	win -> 92, lose -> 5, draw -> 3
+T = 11, order = 1, rand = 3054
+	win -> 89, lose -> 6, draw -> 5
+T = 11, order = 2, rand = 3054
+T = 12, order = 1, rand = 3054
+	win -> 85, lose -> 10, draw -> 5
+T = 12, order = 2, rand = 3054
+	win -> 87, lose -> 9, draw -> 4
+T = 13, order = 1, rand = 3054
+	win -> 85, lose -> 7, draw -> 8
+T = 13, order = 2, rand = 3054
+	win -> 86, lose -> 9, draw -> 5
+T = 14, order = 1, rand = 3054
+	win -> 81, lose -> 15, draw -> 4
+T = 14, order = 2, rand = 3054
+	win -> 93, lose -> 7, draw -> 0
+T = 15, order = 1, rand = 3054
+	win -> 87, lose -> 11, draw -> 2
+T = 15, order = 2, rand = 3054
+	win -> 91, lose -> 6, draw -> 3
+T = 16, order = 1, rand = 3054
+	win -> 89, lose -> 8, draw -> 3
+T = 16, order = 2, rand = 3054
+	win -> 91, lose -> 7, draw -> 2
+T = 17, order = 1, rand = 3054
+	win -> 90, lose -> 9, draw -> 1
+T = 17, order = 2, rand = 3054
+	win -> 91, lose -> 8, draw -> 1
+T = 18, order = 1, rand = 3054
+	win -> 84, lose -> 11, draw -> 5
+T = 18, order = 2, rand = 3054
+	win -> 90, lose -> 6, draw -> 4
+T = 19, order = 1, rand = 3054
+	win -> 80, lose -> 17, draw -> 3
+T = 19, order = 2, rand = 3054
+	win -> 92, lose -> 5, draw -> 3
+T = 20, order = 1, rand = 3054
+	win -> 84, lose -> 14, draw -> 2
+T = 20, order = 2, rand = 3054
+	win -> 92, lose -> 6, draw -> 2
+T = 21, order = 1, rand = 3054
+	win -> 85, lose -> 14, draw -> 1
+T = 21, order = 2, rand = 3054
+	win -> 94, lose -> 4, draw -> 2
+T = 22, order = 1, rand = 3054
+	win -> 80, lose -> 17, draw -> 3
+T = 22, order = 2, rand = 3054
+	win -> 92, lose -> 6, draw -> 2
+T = 23, order = 1, rand = 3054
+	win -> 82, lose -> 12, draw -> 6
+T = 23, order = 2, rand = 3054
+	win -> 88, lose -> 11, draw -> 1
+T = 24, order = 1, rand = 3054
+	win -> 81, lose -> 13, draw -> 6
+T = 24, order = 2, rand = 3054
+	win -> 92, lose -> 6, draw -> 2
+T = 25, order = 1, rand = 3054
+	win -> 84, lose -> 15, draw -> 1
+T = 25, order = 2, rand = 3054
+	win -> 94, lose -> 5, draw -> 1
+T = 26, order = 1, rand = 3054
+	win -> 79, lose -> 18, draw -> 3
+T = 26, order = 2, rand = 3054
+	win -> 96, lose -> 4, draw -> 0
+T = 27, order = 1, rand = 3054
+	win -> 84, lose -> 13, draw -> 3
+T = 27, order = 2, rand = 3054
+	win -> 91, lose -> 6, draw -> 3
+T = 28, order = 1, rand = 3054
+	win -> 81, lose -> 17, draw -> 2
+T = 28, order = 2, rand = 3054
+	win -> 89, lose -> 10, draw -> 1
+T = 29, order = 1, rand = 3054
+	win -> 88, lose -> 11, draw -> 1
+T = 29, order = 2, rand = 3054
+	win -> 90, lose -> 10, draw -> 0
+T = 30, order = 1, rand = 3054
+	win -> 80, lose -> 15, draw -> 5
+T = 30, order = 2, rand = 3054
+	win -> 89, lose -> 8, draw -> 3
+T = 31, order = 1, rand = 3054
+	win -> 78, lose -> 19, draw -> 3
+T = 31, order = 2, rand = 3054
+	win -> 91, lose -> 8, draw -> 1
+T = 32, order = 1, rand = 3054
+	win -> 73, lose -> 22, draw -> 5
+T = 32, order = 2, rand = 3054
+	win -> 89, lose -> 11, draw -> 0
+T = 33, order = 1, rand = 3054
+	win -> 82, lose -> 17, draw -> 1
+T = 33, order = 2, rand = 3054
+	win -> 91, lose -> 3, draw -> 6
+T = 34, order = 1, rand = 3054
+	win -> 89, lose -> 9, draw -> 2
+T = 34, order = 2, rand = 3054
+	win -> 93, lose -> 5, draw -> 2
+T = 35, order = 1, rand = 3054
+	win -> 82, lose -> 17, draw -> 1
+T = 35, order = 2, rand = 3054
+	win -> 94, lose -> 6, draw -> 0
+T = 36, order = 1, rand = 3054
+	win -> 87, lose -> 9, draw -> 4
+T = 36, order = 2, rand = 3054
+	win -> 95, lose -> 4, draw -> 1
+T = 37, order = 1, rand = 3054
+	win -> 85, lose -> 11, draw -> 4
+T = 37, order = 2, rand = 3054
+	win -> 89, lose -> 7, draw -> 4
+T = 38, order = 1, rand = 3054
+	win -> 78, lose -> 19, draw -> 3
+T = 38, order = 2, rand = 3054
+	win -> 87, lose -> 9, draw -> 4
+T = 39, order = 1, rand = 3054
+	win -> 81, lose -> 18, draw -> 1
+T = 39, order = 2, rand = 3054
+	win -> 90, lose -> 9, draw -> 1
+T = 40, order = 1, rand = 3054
+	win -> 89, lose -> 10, draw -> 1
+T = 40, order = 2, rand = 3054
+	win -> 84, lose -> 15, draw -> 1
+T = 41, order = 1, rand = 3054
+	win -> 87, lose -> 10, draw -> 3
+T = 41, order = 2, rand = 3054
+	win -> 90, lose -> 10, draw -> 0
+T = 42, order = 1, rand = 3054
+	win -> 87, lose -> 11, draw -> 2
+T = 42, order = 2, rand = 3054
+	win -> 91, lose -> 9, draw -> 0
+T = 43, order = 1, rand = 3054
+	win -> 84, lose -> 15, draw -> 1
+T = 43, order = 2, rand = 3054
+	win -> 93, lose -> 6, draw -> 1
+T = 44, order = 1, rand = 3054
+	win -> 87, lose -> 11, draw -> 2
+T = 44, order = 2, rand = 3054
+	win -> 88, lose -> 9, draw -> 3
+T = 45, order = 1, rand = 3054
+	win -> 94, lose -> 6, draw -> 0
+T = 45, order = 2, rand = 3054
+	win -> 95, lose -> 4, draw -> 1
+T = 46, order = 1, rand = 3054
+	win -> 86, lose -> 10, draw -> 4
+T = 46, order = 2, rand = 3054
+	win -> 91, lose -> 9, draw -> 0
+T = 47, order = 1, rand = 3054
+	win -> 84, lose -> 13, draw -> 3
+T = 47, order = 2, rand = 3054
+	win -> 91, lose -> 5, draw -> 4
+T = 48, order = 1, rand = 3054
+	win -> 86, lose -> 11, draw -> 3
+T = 48, order = 2, rand = 3054
+	win -> 88, lose -> 10, draw -> 2
+T = 49, order = 1, rand = 3054
+	win -> 86, lose -> 13, draw -> 1
+T = 49, order = 2, rand = 3054
+	win -> 94, lose -> 6, draw -> 0
+T = 50, order = 1, rand = 3054
+	win -> 92, lose -> 7, draw -> 1
+T = 50, order = 2, rand = 3054
+	win -> 93, lose -> 6, draw -> 1
+T = 51, order = 1, rand = 3054
+	win -> 82, lose -> 14, draw -> 4
+T = 51, order = 2, rand = 3054
+	win -> 90, lose -> 8, draw -> 2
+T = 52, order = 1, rand = 3054
+	win -> 79, lose -> 16, draw -> 5
+T = 52, order = 2, rand = 3054
+	win -> 89, lose -> 7, draw -> 4
+T = 53, order = 1, rand = 3054
+	win -> 87, lose -> 11, draw -> 2
+T = 53, order = 2, rand = 3054
+	win -> 95, lose -> 5, draw -> 0
+T = 54, order = 1, rand = 3054
+	win -> 84, lose -> 15, draw -> 1
+T = 54, order = 2, rand = 3054
+	win -> 88, lose -> 10, draw -> 2
+T = 55, order = 1, rand = 3054
+	win -> 85, lose -> 10, draw -> 5
+T = 55, order = 2, rand = 3054
+	win -> 87, lose -> 10, draw -> 3
+T = 56, order = 1, rand = 3054
+	win -> 90, lose -> 8, draw -> 2
+T = 56, order = 2, rand = 3054
+	win -> 87, lose -> 9, draw -> 4
+T = 57, order = 1, rand = 3054
+	win -> 93, lose -> 7, draw -> 0
+T = 57, order = 2, rand = 3054
+	win -> 90, lose -> 5, draw -> 5
+T = 58, order = 1, rand = 3054
+	win -> 92, lose -> 8, draw -> 0
+T = 58, order = 2, rand = 3054
+	win -> 84, lose -> 16, draw -> 0
+T = 59, order = 1, rand = 3054
+	win -> 90, lose -> 6, draw -> 4
+T = 59, order = 2, rand = 3054
+	win -> 89, lose -> 9, draw -> 2
+T = 60, order = 1, rand = 3054
+	win -> 88, lose -> 11, draw -> 1
+T = 60, order = 2, rand = 3054
+	win -> 84, lose -> 14, draw -> 2
+T = 61, order = 1, rand = 3054
+	win -> 95, lose -> 5, draw -> 0
+T = 61, order = 2, rand = 3054
+	win -> 84, lose -> 14, draw -> 2
+T = 62, order = 1, rand = 3054
+	win -> 91, lose -> 8, draw -> 1
+T = 62, order = 2, rand = 3054
+	win -> 89, lose -> 9, draw -> 2
+T = 63, order = 1, rand = 3054
+	win -> 94, lose -> 6, draw -> 0
+T = 63, order = 2, rand = 3054
+	win -> 87, lose -> 10, draw -> 3
+T = 64, order = 1, rand = 3054
+	win -> 88, lose -> 10, draw -> 2
+T = 64, order = 2, rand = 3054
+	win -> 86, lose -> 10, draw -> 4
+T = 65, order = 1, rand = 3054
+	win -> 87, lose -> 11, draw -> 2
+T = 65, order = 2, rand = 3054
+	win -> 90, lose -> 8, draw -> 2
+T = 66, order = 1, rand = 3054
+	win -> 91, lose -> 7, draw -> 2
+T = 66, order = 2, rand = 3054
+	win -> 86, lose -> 14, draw -> 0
+T = 67, order = 1, rand = 3054
+	win -> 93, lose -> 7, draw -> 0
+T = 67, order = 2, rand = 3054
+	win -> 88, lose -> 9, draw -> 3
+T = 68, order = 1, rand = 3054
+	win -> 93, lose -> 6, draw -> 1
+T = 68, order = 2, rand = 3054
+	win -> 91, lose -> 8, draw -> 1
+T = 69, order = 1, rand = 3054
+	win -> 96, lose -> 4, draw -> 0
+T = 69, order = 2, rand = 3054
+	win -> 83, lose -> 16, draw -> 1
+T = 70, order = 1, rand = 3054
+	win -> 89, lose -> 10, draw -> 1
+T = 70, order = 2, rand = 3054
+	win -> 90, lose -> 8, draw -> 2
+T = 71, order = 1, rand = 3054
+	win -> 92, lose -> 7, draw -> 1
+T = 71, order = 2, rand = 3054
+	win -> 88, lose -> 10, draw -> 2
+T = 72, order = 1, rand = 3054
+	win -> 92, lose -> 7, draw -> 1
+T = 72, order = 2, rand = 3054
+	win -> 90, lose -> 10, draw -> 0
+T = 73, order = 1, rand = 3054
+	win -> 95, lose -> 3, draw -> 2
+T = 73, order = 2, rand = 3054
+	win -> 77, lose -> 17, draw -> 6
+T = 74, order = 1, rand = 3054
+	win -> 94, lose -> 5, draw -> 1
+T = 74, order = 2, rand = 3054
+	win -> 95, lose -> 5, draw -> 0
+T = 75, order = 1, rand = 3054
+	win -> 91, lose -> 7, draw -> 2
+T = 75, order = 2, rand = 3054
+	win -> 88, lose -> 11, draw -> 1
+T = 76, order = 1, rand = 3054
+	win -> 87, lose -> 11, draw -> 2
+T = 76, order = 2, rand = 3054
+	win -> 87, lose -> 12, draw -> 1
+T = 77, order = 1, rand = 3054
+	win -> 86, lose -> 12, draw -> 2
+T = 77, order = 2, rand = 3054
+	win -> 91, lose -> 7, draw -> 2
+T = 78, order = 1, rand = 3054
+	win -> 94, lose -> 6, draw -> 0
+T = 78, order = 2, rand = 3054
+	win -> 86, lose -> 14, draw -> 0
+T = 79, order = 1, rand = 3054
+	win -> 91, lose -> 9, draw -> 0
+T = 79, order = 2, rand = 3054
+	win -> 84, lose -> 13, draw -> 3
+T = 80, order = 1, rand = 3054
+	win -> 90, lose -> 8, draw -> 2
+T = 80, order = 2, rand = 3054
+	win -> 90, lose -> 7, draw -> 3
+T = 81, order = 1, rand = 3054
+	win -> 91, lose -> 8, draw -> 1
+T = 81, order = 2, rand = 3054
+	win -> 91, lose -> 8, draw -> 1
+T = 82, order = 1, rand = 3054
+	win -> 87, lose -> 13, draw -> 0
+T = 82, order = 2, rand = 3054
+	win -> 94, lose -> 6, draw -> 0
+T = 83, order = 1, rand = 3054
+	win -> 84, lose -> 14, draw -> 2
+T = 83, order = 2, rand = 3054
+	win -> 89, lose -> 10, draw -> 1
+T = 84, order = 1, rand = 3054
+	win -> 87, lose -> 12, draw -> 1
+T = 84, order = 2, rand = 3054
+	win -> 87, lose -> 11, draw -> 2
+T = 85, order = 1, rand = 3054
+	win -> 92, lose -> 7, draw -> 1
+T = 85, order = 2, rand = 3054
+	win -> 88, lose -> 7, draw -> 5
+T = 86, order = 1, rand = 3054
+	win -> 91, lose -> 8, draw -> 1
+T = 86, order = 2, rand = 3054
+	win -> 91, lose -> 9, draw -> 0
+T = 87, order = 1, rand = 3054
+	win -> 85, lose -> 12, draw -> 3
+T = 87, order = 2, rand = 3054
+	win -> 87, lose -> 10, draw -> 3
+T = 88, order = 1, rand = 3054
+	win -> 85, lose -> 14, draw -> 1
+T = 88, order = 2, rand = 3054
+	win -> 92, lose -> 6, draw -> 2
+T = 89, order = 1, rand = 3054
+	win -> 90, lose -> 9, draw -> 1
+T = 89, order = 2, rand = 3054
+	win -> 91, lose -> 8, draw -> 1
+T = 90, order = 1, rand = 3054
+	win -> 87, lose -> 10, draw -> 3
+T = 90, order = 2, rand = 3054
+	win -> 93, lose -> 7, draw -> 0
+T = 91, order = 1, rand = 3054
+	win -> 89, lose -> 10, draw -> 1
+T = 91, order = 2, rand = 3054
+	win -> 93, lose -> 7, draw -> 0
+T = 92, order = 1, rand = 3054
+	win -> 92, lose -> 6, draw -> 2
+T = 92, order = 2, rand = 3054
+	win -> 86, lose -> 14, draw -> 0
+T = 93, order = 1, rand = 3054
+	win -> 90, lose -> 9, draw -> 1
+T = 93, order = 2, rand = 3054
+	win -> 86, lose -> 12, draw -> 2
+T = 94, order = 1, rand = 3054
+	win -> 91, lose -> 9, draw -> 0
+T = 94, order = 2, rand = 3054
+	win -> 90, lose -> 9, draw -> 1
+T = 95, order = 1, rand = 3054
+	win -> 92, lose -> 5, draw -> 3
+T = 95, order = 2, rand = 3054
+	win -> 89, lose -> 9, draw -> 2
+T = 96, order = 1, rand = 3054
+	win -> 94, lose -> 6, draw -> 0
+T = 96, order = 2, rand = 3054
+	win -> 94, lose -> 6, draw -> 0
+T = 97, order = 1, rand = 3054
+	win -> 87, lose -> 11, draw -> 2
+T = 97, order = 2, rand = 3054
+	win -> 93, lose -> 6, draw -> 1
+T = 98, order = 1, rand = 3054
+	win -> 92, lose -> 8, draw -> 0
+T = 98, order = 2, rand = 3054
+	win -> 85, lose -> 14, draw -> 1
+T = 99, order = 1, rand = 3054
+	win -> 83, lose -> 17, draw -> 0
+T = 99, order = 2, rand = 3054
+	win -> 93, lose -> 6, draw -> 1
+T = 100, order = 1, rand = 3054
+	win -> 91, lose -> 6, draw -> 3
+T = 100, order = 2, rand = 3054
+	win -> 95, lose -> 4, draw -> 1

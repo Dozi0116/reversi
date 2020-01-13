@@ -38,8 +38,7 @@ int main(int argc, char *argv[]) {
 
     Game game;
 
-
-    const int match_max = 500;
+    const int match_max = 100;
 
     int total_win = 0, total_lose = 0;
     int i, j, k, stone, win = 0, lose = 0, result = 0;
@@ -49,7 +48,7 @@ int main(int argc, char *argv[]) {
     for (match = 0;match < match_max;match++){
         game_init(&game);
 
-        // printf("game %d\n", match+1);
+        fprintf(stderr, "game %d\n", match+1);
 
         while (TRUE) {
             // printf("\tturn %d\n", game.stone_num-3);
