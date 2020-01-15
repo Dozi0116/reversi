@@ -286,8 +286,8 @@ void eval_open(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player, score_t *scor
 着手可能数の評価
 */
 int eval_putpos(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player, score_t *score) {
-    char dummy1[BOARD_SIZE+2][BOARD_SIZE+2];
-    char dummy2[30][2];
+    char dummy1[BOARD_SIZE+2][BOARD_SIZE+2] = {{0}};
+    char dummy2[30][2] = {{0}};
     score -> putpos_num = make_board_to_putlist(board, player, dummy1, dummy2);
 }
 

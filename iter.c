@@ -51,7 +51,6 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "game %d\n", match+1);
 
         while (TRUE) {
-            // printf("\tturn %d\n", game.stone_num-3);
             rogic[game.turn](&game, pos);
 
             put_stone(&game, pos, game.turn);

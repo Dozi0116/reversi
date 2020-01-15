@@ -395,7 +395,7 @@ int max_calc(Game *game, Node *node, int depth_limit, int beta) {
             // パスノード
             // 全く同じ盤面を作り、擬似的につなげる。
             node -> children[0] = (Node *)malloc(sizeof(Node));
-            node_init(node -> children[0], node, node -> board, 0, EMPTY);
+            node_init(node -> children[0], node, node -> board, 0, opponent(node -> player));
             node -> child_num = 1;
 
             return min_calc(game, node -> children[0], depth_limit - 1, max_score);
@@ -418,7 +418,7 @@ int max_calc(Game *game, Node *node, int depth_limit, int beta) {
         pos[1] = putpos[i][1];
         put_stone_test(putted_board, reverse, pos, node -> player);
         node -> children[i] = (Node *)malloc(sizeof(Node));
-        node_init(node -> children[i], node, putted_board, 0, EMPTY);
+        node_init(node -> children[i], node, putted_board, 0, opponent(node -> player));
         node -> child_num++;
         score = min_calc(game, node -> children[i], depth_limit - 1, max_score);
 
@@ -464,7 +464,7 @@ int min_calc(Game *game, Node *node, int depth_limit, int alpha) {
             // パスノード
             // 全く同じ盤面を作り、擬似的につなげる。
             node -> children[0] = (Node *)malloc(sizeof(Node));
-            node_init(node -> children[0], node, node -> board, 0, EMPTY);
+            node_init(node -> children[0], node, node -> board, 0, opponent(node -> player));
             node -> child_num = 1;
 
             return max_calc(game, node -> children[0], depth_limit - 1, min_score);
@@ -487,7 +487,7 @@ int min_calc(Game *game, Node *node, int depth_limit, int alpha) {
         pos[1] = putpos[i][1];
         put_stone_test(putted_board, reverse, pos, node -> player);
         node -> children[i] = (Node *)malloc(sizeof(Node));
-        node_init(node -> children[i], node, putted_board, 0, EMPTY);
+        node_init(node -> children[i], node, putted_board, 0, opponent(node -> player));
         node -> child_num++;
         score = max_calc(game, node -> children[i], depth_limit - 1, min_score);
 
@@ -537,7 +537,7 @@ void bot_alpha_beta(Game *game, int pos[]) {
         temp_pos[1] = putpos[i][1];
         put_stone_test(putted_board, reverse, temp_pos, game -> turn);
         root -> children[i] = (Node *)malloc(sizeof(Node));
-        node_init(root -> children[i], root, putted_board, 0, EMPTY);
+        node_init(root -> children[i], root, putted_board, 0, opponent(game -> turn));
         root -> child_num++;
         score = min_calc(game, root -> children[i], depth_limit - 1, max_score);
 
