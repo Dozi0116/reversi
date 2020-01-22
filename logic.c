@@ -506,7 +506,7 @@ int min_calc(Game *game, Node *node, int depth_limit, int alpha) {
 
 void bot_alpha_beta(Game *game, int pos[]) {
     // とりあえずminimax
-    const int depth_limit = 4;
+    const int depth_limit = 6;
 
     // 1手目(max)はここで行う
     char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
