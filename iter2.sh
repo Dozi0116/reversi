@@ -5,7 +5,7 @@ rand=2019
 # rand = 3054
 
 #####
-# rand=2019 # iter 1
+# rand=3054 # iter 1
 rand=2020 # iter 2
 # rand=116 # iter 3
 # rand=182 # iter 4

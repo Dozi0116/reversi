@@ -3,6 +3,8 @@
 #include <stdio.h>
 
 /*
+読み込んだボードをもとに評価値を返すためのファイル。
+
 compile
 > gcc board_test.c book_evaluation.c reversi.c
 */
