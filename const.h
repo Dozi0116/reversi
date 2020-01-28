@@ -11,6 +11,9 @@
 #define TRUE 1
 #define FALSE 0
 
+#define MIN_SCORE -99999
+#define MAX_SCORE 99999
+
 #define UP_LEFT 0x80
 #define UP_CENTER 0x40
 #define UP_RIGHT 0x20

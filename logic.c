@@ -25,12 +25,12 @@ void node_init(Node *node,
     Node *parent,
     char board[BOARD_SIZE+2][BOARD_SIZE+2],
     double score,
-    int player); // OK
-struct Node *roulette(Node *nodes[], int length); // OK
-struct Node *search(Node *node); // OK
-void expand(Game *game, Node *node); // else部分
-void chance_update(Node *nodes[], int node_num); // OK
-void propagation(Game *game, Node *node); // OK
+    int player);
+struct Node *roulette(Node *nodes[], int length);
+struct Node *search(Node *node);
+void expand(Game *game, Node *node);
+void chance_update(Node *nodes[], int node_num);
+void propagation(Game *game, Node *node);
 
 int match = 0;
 
@@ -158,21 +158,19 @@ void expand(Game *game, Node *node) {
             // 決着ノード
             // 勝敗に応じて大きい点数を与える。
             // printf("game end node\n");
-            int stone = 0;
-            for (i = 1;i <= BOARD_SIZE;i++) {
-                for (j = 1;j <= BOARD_SIZE;j++) {
-                    if (node -> board[i][j] == game -> turn) stone++;
-                    else if (node -> board[i][j] == opponent(game -> turn)) stone --;
-                }
-            }
-            if (stone > 0) {
+
+            int result = count_board(node -> board, game -> turn);
+
+            // 決着した場合、特殊なスコアを付けているが、これは本来は良くない可能性…？
+            // 振り切りスコア(-730など)をいれるのが良かったか？
+            if (result > 0) {
                 // win
                 score = 10;
-            } else if (stone < 0) {
+            } else if (result < 0) {
                 // lose
                 score = -10;
             } else {
-                //draw
+                // draw
                 score = 0;
             }
 
@@ -232,13 +230,13 @@ void chance_update(Node *nodes[], int node_num) {
     // printf("softmax_T -> %lf\n", softmax_T);
     for (i = 0; i < node_num;i++) {
         if (nodes[i] -> score / softmax_T > 700) {
-            printf("over 700!!!!\n");
-            printf("\t score -> %lf\n", -nodes[i] -> score);
+            // printf("over 700!!!!\n");
+            // printf("\t score -> %lf\n", -nodes[i] -> score);
             nodes[i] -> score = 700;
         }
         if (-(nodes[i] -> score) / softmax_T > 700) {
-            printf("under 700!!!\n");
-            printf("\t score -> %lf\n", -(nodes[i] -> score));
+            // printf("under 700!!!\n");
+            // printf("\t score -> %lf\n", -(nodes[i] -> score));
             nodes[i] -> score = -700;
         }
 
@@ -360,9 +358,6 @@ typedef struct {
     int pos[2];
 } minimax_t;
 
-#define MIN_SCORE -99999
-#define MAX_SCORE 99999
-
 int min_calc(Game *game, Node *node, int depth_limit, int alpha);
 int max_calc(Game *game, Node *node, int depth_limit, int beta);
 
@@ -435,6 +430,7 @@ int max_calc(Game *game, Node *node, int depth_limit, int beta) {
     return max_score;
 }
 
+
 int min_calc(Game *game, Node *node, int depth_limit, int alpha) {
 
     // 深さ制限に達していたら返す。
@@ -504,11 +500,10 @@ int min_calc(Game *game, Node *node, int depth_limit, int alpha) {
     return min_score;
 }
 
+
 void bot_alpha_beta(Game *game, int pos[]) {
-    // とりあえずminimax
     const int depth_limit = 6;
 
-    // 1手目(max)はここで行う
     char reverse[BOARD_SIZE+2][BOARD_SIZE+2];
     char putpos[30][2];
     int length = make_board_to_putlist(game -> board, game -> turn, reverse, putpos);
@@ -517,6 +512,7 @@ void bot_alpha_beta(Game *game, int pos[]) {
     pos[0] = putpos[0][0];
     pos[1] = putpos[0][1];
 
+    // 置く場所が1箇所しか無いならそのまま返す。
     if (length == 1) return;
 
     Node *root = (Node *)malloc(sizeof(Node));
@@ -525,6 +521,7 @@ void bot_alpha_beta(Game *game, int pos[]) {
     char putted_board[BOARD_SIZE+2][BOARD_SIZE+2];
     int i, j, k, score, max_score = MIN_SCORE;
 
+    // 1手目(max)はここで行う
     for (i = 0;i < length;i++) {
         // boardをコピー
         for (j = 0;j < BOARD_SIZE+2;j++) {
