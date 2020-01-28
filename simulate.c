@@ -4,6 +4,11 @@
 #include <time.h>
 #include <stdlib.h>
 
+/*
+ゲームの過程を見るときに使うファイル。
+1手ごとにボードが表示されて、どこに打ったかが表示される。
+*/
+
 int main(void) {
     Game game;
     game_init(&game);
