@@ -2,7 +2,6 @@
 #define REVERSI_H
 
 #include "const.h"
-#include "list.h"
 #include <stdlib.h>
 
 #define board_up_left(y, x) board[y-1][x-1]
