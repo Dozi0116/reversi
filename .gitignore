@@ -134,3 +134,6 @@ pip-selfcheck.json
 *.exe
 simulate
 test
+iter_test
+soft_test
+core
