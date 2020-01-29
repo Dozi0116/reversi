@@ -212,7 +212,7 @@ void expand(Game *game, Node *node) {
 }
 
 
-double softmax_T;
+double softmax_T = 10;
 
 /*
 温度付きソフトマックス関数
@@ -358,10 +358,10 @@ typedef struct {
     int pos[2];
 } minimax_t;
 
-int min_calc(Game *game, Node *node, int depth_limit, int alpha);
-int max_calc(Game *game, Node *node, int depth_limit, int beta);
+double min_calc(Game *game, Node *node, int depth_limit, int alpha);
+double max_calc(Game *game, Node *node, int depth_limit, int beta);
 
-int max_calc(Game *game, Node *node, int depth_limit, int beta) {
+double max_calc(Game *game, Node *node, int depth_limit, int beta) {
 
     // 深さ制限に達していたら返す。
     if (depth_limit <= 0) return evaluation(node -> board, game -> turn);
@@ -372,7 +372,8 @@ int max_calc(Game *game, Node *node, int depth_limit, int beta) {
     int length = make_board_to_putlist(node -> board, node -> player, reverse, putpos);
     int result = 0;
 
-    int i, j, k, score, max_score = MIN_SCORE;
+    int i, j, k;
+    double score, max_score = MIN_SCORE;
 
     if (length == 0) {
         length = make_board_to_putlist(node -> board, opponent(node -> player), reverse, putpos);
@@ -431,7 +432,7 @@ int max_calc(Game *game, Node *node, int depth_limit, int beta) {
 }
 
 
-int min_calc(Game *game, Node *node, int depth_limit, int alpha) {
+double min_calc(Game *game, Node *node, int depth_limit, int alpha) {
 
     // 深さ制限に達していたら返す。
     if (depth_limit <= 0) return evaluation(node -> board, game -> turn);
@@ -442,7 +443,8 @@ int min_calc(Game *game, Node *node, int depth_limit, int alpha) {
     int length = make_board_to_putlist(node -> board, node -> player, reverse, putpos);
     int result = 0;
 
-    int i, j, k, score, min_score = MAX_SCORE;
+    int i, j, k;
+    double score, min_score = MAX_SCORE;
 
     if (length == 0) {
         length = make_board_to_putlist(node -> board, opponent(node -> player), reverse, putpos);
@@ -487,7 +489,7 @@ int min_calc(Game *game, Node *node, int depth_limit, int alpha) {
         node -> child_num++;
         score = max_calc(game, node -> children[i], depth_limit - 1, min_score);
 
-        if (score > min_score) {
+        if (score < min_score) {
             min_score = score;
         }
 
@@ -519,7 +521,8 @@ void bot_alpha_beta(Game *game, int pos[]) {
     node_init(root, NULL, game -> board, 0, EMPTY);
 
     char putted_board[BOARD_SIZE+2][BOARD_SIZE+2];
-    int i, j, k, score, max_score = MIN_SCORE;
+    int i, j, k;
+    double score, max_score = MIN_SCORE;
 
     // 1手目(max)はここで行う
     for (i = 0;i < length;i++) {
