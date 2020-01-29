@@ -103,17 +103,17 @@ void put_stone(struct Game *game,
     boardのposにplayerの石を置く。
     */
 
-   int y = pos[0], x = pos[1];
-   int dy, dx;
-   int i;
-   int score_index = 0;
+    int y = pos[0], x = pos[1];
+    int dy, dx;
+    int i;
+    int score_index = 0;
 
-   game -> board[y][x] = player;
-   score_index++;
+    game -> board[y][x] = player;
+    score_index++;
 
-   for (i = 0; i < DIRECTION_SIZE;i++) {
-       if ((game -> reverse[y][x] & FLAG[i]) != 0) {
-           // その方向に返すことができる
+    for (i = 0; i < DIRECTION_SIZE;i++) {
+        if ((game -> reverse[y][x] & FLAG[i]) != 0) {
+            // その方向に返すことができる
             dy = y + DIRECTION[i][0];
             dx = x + DIRECTION[i][1];
             do {
@@ -122,17 +122,17 @@ void put_stone(struct Game *game,
                 dy += DIRECTION[i][0];
                 dx += DIRECTION[i][1];
             } while (game -> board[dy][dx] == opponent(player));           
-       }
-   }
+        }
+    }
 
-   // 棋譜更新
-   int j;
-   for (i = 0;i < BOARD_SIZE+2;i++) {
-       for(j = 0;j < BOARD_SIZE+2;j++) {
-           game -> score[game -> stone_num][i][j] = game -> board[i][j];
-       }
-   }
-   (game -> stone_num)++;
+    // 棋譜更新
+    int j;
+    for (i = 0;i < BOARD_SIZE+2;i++) {
+        for(j = 0;j < BOARD_SIZE+2;j++) {
+            game -> score[game -> stone_num][i][j] = game -> board[i][j];
+        }
+    }
+    (game -> stone_num)++;
 }
 
 
