@@ -3,6 +3,7 @@
 #include "logic.h"
 #include <time.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 /*
 ゲームの過程を見るときに使うファイル。
@@ -21,11 +22,33 @@ int main(void) {
 
     srand(12346);
 
+    struct timeval before, after;
+    double elapse;
+    long int sec, usec;
+
     while (TRUE) {
         show_board(&game);
 
+        // 時間計測
+        gettimeofday(&before, NULL);
         rogic[game.turn](&game, pos);
+        gettimeofday(&after, NULL);
 
+        if (before.tv_usec > after.tv_usec) {
+            // 繰り下がり
+            sec = after.tv_sec - before.tv_sec - 1;
+            usec = 1000000 + after.tv_usec - before.tv_usec;
+        } else {
+            // 何もなし
+            sec = after.tv_sec - before.tv_sec;
+            usec = after.tv_usec - before.tv_usec;
+        }
+
+        // printf("%ld.%ld -> %ld.%ld\n", before.tv_sec, before.tv_usec, after.tv_sec, after.tv_usec);
+
+        if (game.turn == WHITE) {
+            printf("%ld.%ld\n", sec, usec);
+        }
         printf("press -> (%d(%d), %c(%d))\n", pos[0], pos[0], pos[1] + 'A' - 1, pos[1]);
         put_stone(&game, pos, game.turn);
 
