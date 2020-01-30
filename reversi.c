@@ -178,9 +178,9 @@ void show_board(Game *game) {
                     break;
                 case EMPTY:
                     if((game -> reverse)[i][j] != 0) {
-                        printf("_ ");
-                    } else {
                         printf(". ");
+                    } else {
+                        printf("_ ");
                     }
                     break;
                 default:
@@ -326,7 +326,7 @@ void board_print(char board[BOARD_SIZE+2][BOARD_SIZE+2]) {
                     printf("x ");
                     break;
                 case EMPTY:
-                    printf(". ");
+                    printf("_ ");
                     break;
                 default:
                     printf("e ");
