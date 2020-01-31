@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rand=2019
+# rand=2019
 # rand = 2019 + 1 + 2 + ... + 45 = 3054
 # rand = 3054
 
@@ -14,7 +14,7 @@ rand=182 # iter 4
 
 for i in `seq 1 100`
 do
-    rand=`expr $rand + $i`
+    # rand=`expr $rand + $i`
     echo "playing ./iter_test $i $rand"
     echo "T = $i rand = $rand"
     ./iter_test $i $rand >> iter4.csv

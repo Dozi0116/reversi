@@ -46,6 +46,7 @@ int main(int argc, char *argv[]) {
         }
 
         win = 0;
+        lose = 0;
 
         for (match = 0;match < match_max;match++) {
             game_init(&game);
