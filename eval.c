@@ -52,14 +52,14 @@ double eval_static_board(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     
     static const int board_score[BOARD_SIZE+2][BOARD_SIZE+2] = {
         {0,   0,   0,   0,   0,   0,   0,   0,   0, 0},
-        {0, 100, -50,  10,   0,   0,  10, -50, 100, 0},
-        {0, -50, -70,  -5, -10, -10,  -5, -70, -50, 0},
-        {0,  10,  -5, -10,  -5,  -5, -10,  -5,  10, 0},
-        {0,   0, -10,  -5,   0,   0,  -5, -10,   0, 0},
-        {0,   0, -10,  -5,   0,   0,  -5, -10,   0, 0},
-        {0,  10,  -5, -10,  -5,  -5, -10,  -5,  10, 0},
-        {0, -50, -70,  -5, -10, -10,  -5, -70, -50, 0},
-        {0, 100, -50,  10,   0,   0,  10, -50, 100, 0},
+        {0,  30, -12,   0,  -1,  -1,   0, -12,  30, 0},
+        {0, -12, -15,  -3,  -3,  -3,  -3, -15, -12, 0},
+        {0,   0,  -3,   0,  -1,  -1,   0,  -3,   0, 0},
+        {0,  -1,  -3,  -1,  -1,  -1,  -1,  -3,  -1, 0},
+        {0,  -1,  -3,  -1,  -1,  -1,  -1,  -3,  -1, 0},
+        {0,   0,  -3,   0,  -1,  -1,   0,  -3,   0, 0},
+        {0, -12, -15,  -3,  -3,  -3,  -3, -15, -12, 0},
+        {0,  30, -12,   0,  -1,  -1,   0, -12,  30, 0},
         {0,   0,   0,   0,   0,   0,   0,   0,   0, 0}
     };
 
@@ -256,20 +256,20 @@ double eval_side_shape(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
     return fixed_stone * weights[FS_INDEX] + mountain_score * weights[MT_INDEX] - wing_score * weights[WI_INDEX];
 }
 
-double eval(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player,
-            int pos[2], char putted_board[BOARD_SIZE+2][BOARD_SIZE+2]) {
+double evaluation(char board[BOARD_SIZE+2][BOARD_SIZE+2], int player) {
 
     // 静的盤面評価
-    double sb_score = eval_static_board(putted_board, player) * weights[SB_INDEX];
+    double sb_score = eval_static_board(board, player);
     // 着手可能手数
-    double pp_score = eval_put_position(board, player) * weights[PP_INDEX];
+    // double pp_score = eval_put_position(board, player) * weights[PP_INDEX];
     // 開放度
-    double os_score = eval_open_space(board, pos) * weights[OS_INDEX];
+    // double os_score = eval_open_space(board, pos) * weights[OS_INDEX];
     // 辺の評価
-    double fs_score = eval_side_shape(putted_board, player);
+    // double fs_score = eval_side_shape(putted_board, player);
 
     // debug output
-    printf("evalscore\n\tsb -> %lf\n\tpp -> %lf\n\tos -> %lf\n\tfs -> %lf\n", sb_score, pp_score, os_score, fs_score);
+    // printf("evalscore\n\tsb -> %lf\n\tpp -> %lf\n\tos -> %lf\n\tfs -> %lf\n", sb_score, pp_score, os_score, fs_score);
 
-    return sb_score + pp_score + os_score + fs_score;
+    // return sb_score + pp_score + os_score + fs_score;
+    return sb_score;
 }
