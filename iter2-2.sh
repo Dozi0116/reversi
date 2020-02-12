@@ -7,5 +7,5 @@ i=84 # min winrate
 rand=8192
 echo "playing ./iter_test $i $rand"
 echo "T = $i rand = $rand"
-./iter_test $i $rand >> iter2-1.csv
+./iter_test2 $i $rand >> iter2-1.csv
 
