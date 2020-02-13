@@ -17,8 +17,8 @@ int main(void) {
     
     // ゲームで双方のプレイヤーが使うロジックを突っ込む。
     void (*rogic[PLAYERS])(struct Game*, int []);
-    rogic[BLACK] = bot_softmax;
-    rogic[WHITE] = bot_alpha_beta;
+    rogic[BLACK] = bot_alpha_beta;
+    rogic[WHITE] = bot_softmax;
 
     srand(12346);
 
@@ -27,7 +27,7 @@ int main(void) {
     long int sec, usec;
 
     while (TRUE) {
-        show_board(&game);
+        // show_board(&game);
 
         // 時間計測
         gettimeofday(&before, NULL);
@@ -44,12 +44,11 @@ int main(void) {
             usec = after.tv_usec - before.tv_usec;
         }
 
-        // printf("%ld.%ld -> %ld.%ld\n", before.tv_sec, before.tv_usec, after.tv_sec, after.tv_usec);
-
         if (game.turn == WHITE) {
+            // printf("%ld.%ld -> %ld.%ld\n", before.tv_sec, before.tv_usec, after.tv_sec, after.tv_usec);
             printf("%ld.%ld\n", sec, usec);
         }
-        printf("press -> (%d(%d), %c(%d))\n", pos[0], pos[0], pos[1] + 'A' - 1, pos[1]);
+        // printf("press -> (%d(%d), %c(%d))\n", pos[0], pos[0], pos[1] + 'A' - 1, pos[1]);
         put_stone(&game, pos, game.turn);
 
         if (next_turn(&game) == TRUE) {

@@ -134,6 +134,7 @@ void node_init(Node *node,
     node -> child_num = 0;
     node -> score = score;
     node -> player = player;
+    // node -> chance = -1;
 }
 
 
@@ -159,6 +160,18 @@ void expand(Game *game, Node *node) {
             // 勝敗に応じて大きい点数を与える。
             // printf("game end node\n");
 
+            /*
+            注意！！
+            ここのプログラムは冗長にかかれており、動作が遅くなる原因になっている。
+            count_board関数は動作が重く、何回も実行しては1秒単位で動作に遅れが生じる。
+
+            以下の188行目までをif (node -> chance == -1) {} で囲い、node_init関数のnode -> chance = -1の行のコメントアウトを外す。
+            次にif文の中身をnode -> score = に変更する。
+            必要に応じて、10/-10ではなく、700/-700となるべく大きな値を入れる。
+            そして、193行目を消すことで、最適化が完了すると思われる。
+            */
+
+            // if (node -> chance == -1) {
             int result = count_board(node -> board, game -> turn);
 
             // 決着した場合、特殊なスコアを付けているが、これは本来は良くない可能性…？
@@ -176,6 +189,7 @@ void expand(Game *game, Node *node) {
 
             node -> children[0] = (Node *)malloc(sizeof(Node));
             node_init(node -> children[0], node, node -> board, -score, opponent(node -> player));
+            // }
             node -> child_num = 1;
 
             return;
@@ -303,7 +317,7 @@ void all_free(Node *node) {
 int pos[]の中に次に打つべき手を格納する。
 */
 void bot_softmax(Game *game, int pos[]) {
-    const int max_count = 2000;
+    const int max_count = 6000;
     int count;
 
     // 各着手可能位置を調査
@@ -515,7 +529,10 @@ void bot_alpha_beta(Game *game, int pos[]) {
     pos[1] = putpos[0][1];
 
     // 置く場所が1箇所しか無いならそのまま返す。
-    if (length == 1) return;
+    if (length == 1){
+        // printf("a\n");
+        return;
+    }
 
     Node *root = (Node *)malloc(sizeof(Node));
     node_init(root, NULL, game -> board, 0, EMPTY);
