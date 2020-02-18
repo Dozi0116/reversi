@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
 
     Game game;
 
-    const int match_max = 500;
+    const int match_max = 100;
 
     int total_win = 0, total_lose = 0;
     int i, j, k, stone, win = 0, lose = 0, result = 0;

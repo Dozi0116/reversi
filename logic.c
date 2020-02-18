@@ -134,7 +134,7 @@ void node_init(Node *node,
     node -> child_num = 0;
     node -> score = score;
     node -> player = player;
-    // node -> chance = -1;
+    node -> chance = -1;
 }
 
 
@@ -171,26 +171,26 @@ void expand(Game *game, Node *node) {
             そして、193行目を消すことで、最適化が完了すると思われる。
             */
 
-            // if (node -> chance == -1) {
-            int result = count_board(node -> board, game -> turn);
+            if (node -> chance == -1) {
+                int result = count_board(node -> board, game -> turn);
 
-            // 決着した場合、特殊なスコアを付けているが、これは本来は良くない可能性…？
-            // 振り切りスコア(-730など)をいれるのが良かったか？
-            if (result > 0) {
-                // win
-                score = 10;
-            } else if (result < 0) {
-                // lose
-                score = -10;
-            } else {
-                // draw
-                score = 0;
+                // 決着した場合、特殊なスコアを付けているが、これは本来は良くない可能性…？
+                // 振り切りスコア(-730など)をいれるのが良かったか？
+                if (result > 0) {
+                    // win
+                    score = MAX_SCORE_SOFTMAX;
+                } else if (result < 0) {
+                    // lose
+                    score = MIN_SCORE_SOFTMAX;
+                } else {
+                    // draw
+                    score = 0;
+                }
+
+                node -> children[0] = (Node *)malloc(sizeof(Node));
+                node_init(node -> children[0], node, node -> board, -score, opponent(node -> player));
             }
-
-            node -> children[0] = (Node *)malloc(sizeof(Node));
-            node_init(node -> children[0], node, node -> board, -score, opponent(node -> player));
-            // }
-            node -> child_num = 1;
+            // node -> child_num = 1;
 
             return;
         } else {

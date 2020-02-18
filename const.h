@@ -14,6 +14,9 @@
 #define MIN_SCORE -99999
 #define MAX_SCORE 99999
 
+#define MIN_SCORE_SOFTMAX -700
+#define MAX_SCORE_SOFTMAX 700
+
 #define UP_LEFT 0x80
 #define UP_CENTER 0x40
 #define UP_RIGHT 0x20

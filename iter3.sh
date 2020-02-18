@@ -12,7 +12,7 @@ rand=116 # iter 3
 # rand=1 # iter 5
 #####
 
-for i in `seq 1 100`
+for i in `seq 1 50`
 do
     # rand=`expr $rand + $i`
     echo "playing ./iter_test $i $rand"
