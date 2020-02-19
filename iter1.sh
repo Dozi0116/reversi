@@ -17,6 +17,6 @@ do
     # rand=`expr $rand + $i`
     echo "playing ./iter_test $i $rand"
     echo "T = $i rand = $rand"
-    ./iter_test $i $rand >> iter1.csv
+    ./iter_test3 $i $rand >> iter1.csv
 done
 
