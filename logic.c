@@ -317,7 +317,7 @@ void all_free(Node *node) {
 int pos[]の中に次に打つべき手を格納する。
 */
 void bot_softmax(Game *game, int pos[]) {
-    const int max_count = 6000;
+    const int max_count = 7000;
     int count;
 
     // 各着手可能位置を調査
