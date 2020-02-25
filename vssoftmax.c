@@ -1,3 +1,15 @@
+/*
+ソフトマックス同士で対戦させる用のプログラム。
+先手後手でソフトマックスの温度を(強引に)変えながら対戦できる。
+
+コンパイル方法
+> gcc vssoftmax.c book_evaluation.c logic.c reversi.c utility.c -lm
+
+使い方
+> ./<ファイル名> <シード値>
+*/
+
+
 #include <stdio.h>
 #include "reversi.h"
 #include "logic.h"

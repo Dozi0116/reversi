@@ -1,3 +1,11 @@
+/*
+本を参考にする前に使っていた評価関数。
+実験環境では一切使っていない。
+
+使うことがあるならbook_evaluation.cの方を使うこと。
+*/
+
+
 #include "const.h"
 #include "reversi.h"
 #include <stdio.h>

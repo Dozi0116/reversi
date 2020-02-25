@@ -5,8 +5,8 @@
 /*
 読み込んだボードをもとに評価値を返すためのファイル。
 
-compile
-> gcc board_test.c book_evaluation.c reversi.c
+コンパイル方法
+> gcc board_test.c book_evaluation.c reversi.c -lm
 */
 
 void show(char board[BOARD_SIZE+2][BOARD_SIZE+2]) {

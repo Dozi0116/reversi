@@ -1,14 +1,18 @@
+/*
+ゲームの過程を見るときに使うファイル。
+1手ごとにボードが表示されて、どこに打ったかが表示される。
+rogicの部分をplayerに変更すれば対戦もできる。
+
+コンパイル方法
+> gcc simulate.c book_evaluation.c logic.c reversi.c utility.c -lm
+*/
+
 #include <stdio.h>
 #include "reversi.h"
 #include "logic.h"
 #include <time.h>
 #include <stdlib.h>
 #include <sys/time.h>
-
-/*
-ゲームの過程を見るときに使うファイル。
-1手ごとにボードが表示されて、どこに打ったかが表示される。
-*/
 
 int main(void) {
     Game game;

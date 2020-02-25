@@ -1,3 +1,18 @@
+/*
+温度とシード値を与えて連続対戦を行う。
+先攻と後攻でそれぞれmatch_max回行う。
+コンパイル方法
+> gcc iter.c book_evaluation.c logic.c reversi.c utility.c -lm
+使い方
+> ./<ファイル名> <温度> <シード値>
+
+途中の情報は標準エラー出力に吐くため、
+> ./hoge 1 2000 >> result.dat
+のようにしても結果のみが出力される。(環境によってはエラーも出ちゃうかも？)
+
+このコードを利用して、シェルスクリプトを組めば自動で対戦させ続けるプログラムができる。
+*/
+
 #include <stdio.h>
 #include "reversi.h"
 #include "logic.h"
